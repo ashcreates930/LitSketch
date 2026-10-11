@@ -48,4 +48,9 @@ check("circles reordered", ordered.map.orbits.map((o) => o.heading).join(",") ==
 check("content moved with its circle", ordered.map.orbits[2].lines[0].includes("vent"));
 check("connectors fixed", ordered.map.links.join(" ") === "who wants… but… so then…");
 
+
+// 5. One page sending every prompt to ¶1 is flagged for a retry.
+const lazy = structuredClone(DEMO_GENERATION);
+lazy.map.orbits.forEach((o) => (o.paragraph = 1));
+check("all-¶1 story map flagged", verifyGeneration(lazy, paras).some((i) => i.repair.includes("4 of 4 items cite ¶1")));
 process.exit(failed ? 1 : 0);

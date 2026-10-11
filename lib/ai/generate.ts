@@ -23,6 +23,7 @@ export async function generateResource(args: {
   grade: number;
   benchmark: Benchmark;
   title: string;
+  titleHint?: string;
   paragraphs: string[];
 }): Promise<GenerateResult> {
   if (demoModeActive()) {

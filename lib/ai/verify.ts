@@ -179,5 +179,25 @@ export function verifyGeneration(g: Generation, paragraphs: string[]): Issue[] {
     add("guided.your_turn.choices needs 3 to 5 choices with at least one correct.", "The check-the-boxes question is incomplete.");
   }
 
+  // Lazy citations: on a longer passage, one page's cues should not all point at the same ¶
+  // (typically ¶1). The retry asks for each item's own evidence; fixCitations keeps it honest.
+  if (max >= 4) {
+    const pages: [string, number[]][] = [
+      ["Doodle vocabulary", v.map((w) => w.paragraph)],
+      ["Story map", m.orbits.map((o) => o.paragraph)],
+      ["Guided notes", [...gd.boxes.map((b) => b.paragraph), gd.your_turn.paragraph]],
+    ];
+    for (const [name, cites] of pages) {
+      const top = Math.max(...cites.map((c) => cites.filter((x) => x === c).length));
+      if (cites.length >= 3 && top / cites.length >= 0.75) {
+        const p = cites.find((c) => cites.filter((x) => x === c).length === top);
+        add(
+          `${name}: ${top} of ${cites.length} items cite ¶${p}. For each item, find the paragraph that holds its own answer across the whole passage and copy its clue from there.`,
+          `${name}: most clues point to ¶${p}. Check that each one really is there.`,
+        );
+      }
+    }
+  }
+
   return issues;
 }

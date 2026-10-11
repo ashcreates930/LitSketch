@@ -147,6 +147,7 @@ export const GenerateRequestSchema = z.object({
   grade: z.number().int().min(6).max(12),
   benchmarkCode: z.string().regex(/^ELA\.\d{1,2}\.(R|V)\.\d\.\d$/),
   accessCode: z.string().max(200).optional(),
+  titleHint: z.string().max(300).optional(),
 });
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;
 

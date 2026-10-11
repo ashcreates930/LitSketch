@@ -194,12 +194,12 @@
 .layout-guided .frame-d { border: 3px dashed var(--ink); border-radius: 0.6em; padding: 0.75em 0.9em; display: flex; flex-direction: column; }
 .layout-guided .frame-d .space { flex: 1; min-height: 8em; }
 
-/* ---------- Numbered passage (optional last page) ---------- */
-.layout-passage .title { margin: 0.9em 0 0.6em; }
-.layout-passage .title .hollow { font-size: 2.6em; --hc: var(--c2); }
-.layout-passage .title .sub { font-family: var(--hand); font-weight: 700; font-size: 1.15em; margin: 0.25em 0 0; }
-.layout-passage .ptext { display: grid; gap: 0.6em; }
-.layout-passage .para { display: grid; grid-template-columns: 2.6em 1fr; gap: 0.5em; font-size: 1em; line-height: 1.55; }
+/* ---------- Numbered passage (optional last pages; flows over as many pages as needed) ---------- */
+.layout-passage .phead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25em 1em; margin: 0.7em 0 0.7em; padding-bottom: 0.4em; border-bottom: 2.5px dashed var(--rule); }
+.layout-passage .ptitle { font-size: 1.9em; line-height: 1.05; --hc: var(--c2); }
+.layout-passage .ppage { font-family: var(--hand); font-weight: 700; font-size: 1.05em; margin: 0; white-space: nowrap; }
+.layout-passage .ptext { display: grid; gap: 0.6em; align-content: start; }
+.layout-passage .para { display: grid; grid-template-columns: 2.6em 1fr; gap: 0.5em; margin: 0; font-size: 1em; line-height: 1.55; }
 .layout-passage .para .pn { font-family: var(--display); font-size: 0.95em; line-height: 1.6; }
 .layout-passage .para .pt { white-space: pre-line; }
 
@@ -270,3 +270,7 @@
 .ls-print .layout-guided .apply { grid-template-columns: 1.15fr 1fr; flex: 1; max-height: 5.2in; }
 .ls-print .layout-map.mode-divergent .map { width: 76%; }
 .ls-print .layout-map.mode-divergent .theme { width: 74%; margin-top: 0.2em; }
+.ls-print .layout-vocab.mode-convergent .vrow .art { max-height: 1.75in; }
+.ls-print .layout-vocab.mode-convergent .title .hollow { font-size: 2.4em; }
+.ls-print .layout-vocab.mode-convergent .text .ex { margin-bottom: 0.35em; }
+.sheet .use-it { margin-top: 0.35em; font-weight: 700; }

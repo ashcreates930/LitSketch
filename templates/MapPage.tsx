@@ -56,7 +56,7 @@ export function MapPage() {
                         <Cloze path={[...P, "lines", j]} label={`Circle ${i + 1}, line ${j + 1}`} />
                       </p>
                     ))}
-                    <Lines n={2} />
+                    <Lines n={3} />
                   </>
                 ) : (
                   <>

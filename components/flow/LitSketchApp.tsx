@@ -61,7 +61,7 @@ export function LitSketchApp() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: draft.title, paragraphs, grade: draft.grade, benchmarkCode: bm.code, accessCode }),
+        body: JSON.stringify({ title: draft.title, paragraphs, grade: draft.grade, benchmarkCode: bm.code, accessCode, titleHint: draft.heading.join(" / ") }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -139,7 +139,7 @@ export function LitSketchApp() {
           onChange={patch}
           onNext={() => go(2)}
           onSample={() =>
-            patch({ title: DEMO_TITLE, text: DEMO_PASSAGE, agreed: true, grade: DEMO_GRADE, benchmarkCode: DEMO_BENCHMARK })
+            patch({ title: DEMO_TITLE, text: DEMO_PASSAGE, heading: [], agreed: true, grade: DEMO_GRADE, benchmarkCode: DEMO_BENCHMARK })
           }
         />
       )}

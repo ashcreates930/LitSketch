@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   }
   const parsed = GenerateRequestSchema.safeParse(body);
   if (!parsed.success) return fail("Some of the information was missing. Please go back and check each step.", 400);
-  const { title, paragraphs, grade, benchmarkCode, accessCode } = parsed.data;
+  const { title, paragraphs, grade, benchmarkCode, accessCode, titleHint } = parsed.data;
 
   // Layer 1: teacher access code, checked here on the server.
   const access = checkAccessCode(accessCode);
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   if (words > MAX_WORDS) return fail(`The passage can be up to ${MAX_WORDS} words. Try a shorter section.`, 400);
 
   try {
-    const result = await generateResource({ grade, benchmark, title, paragraphs });
+    const result = await generateResource({ grade, benchmark, title, titleHint, paragraphs });
     // One rule, decided here: V benchmarks always open on vocab (see pickLayout).
     return Response.json({ ...result, suggestedLayout: pickLayout(benchmark.code, result.content.text_type) });
   } catch (err) {

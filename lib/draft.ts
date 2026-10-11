@@ -21,6 +21,8 @@ export type Draft = {
   step: 1 | 2 | 3 | 4;
   title: string;
   text: string;
+  /** title/author lines found above an uploaded text; a hint for the AI, never the title itself */
+  heading: string[];
   agreed: boolean;
   grade: number | null;
   benchmarkCode: string | null;
@@ -32,6 +34,7 @@ export const EMPTY_DRAFT: Draft = {
   step: 1,
   title: "",
   text: "",
+  heading: [],
   agreed: false,
   grade: null,
   benchmarkCode: null,

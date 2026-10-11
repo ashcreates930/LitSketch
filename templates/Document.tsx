@@ -13,7 +13,7 @@ export function Document({ withPassage }: { withPassage: boolean }) {
     <div className="ls-doc">
       {layout === "vocab" ? <VocabPage /> : layout === "map" ? <MapPage /> : <GuidedPage />}
       {withPassage &&
-        passageGroups.map((g, i) => <PassagePage key={i} indexes={g} n={i + 1} total={passageGroups.length} />)}
+        passageGroups.map((g, i) => <PassagePage key={i} chunks={g} n={i + 1} total={passageGroups.length} />)}
     </div>
   );
 }

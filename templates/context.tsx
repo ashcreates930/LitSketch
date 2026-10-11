@@ -3,6 +3,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import type { LayoutKind, Resource, ThinkerMode } from "@/lib/ai/schema";
 import { EditableText } from "@/components/EditableText";
+import type { PassageChunk } from "./PassagePage";
 
 export type Path = (string | number)[];
 
@@ -14,7 +15,7 @@ type Ctx = {
   layout: LayoutKind;
   mode: ThinkerMode;
   /** paragraph indexes grouped into printed passage pages */
-  passageGroups: number[][];
+  passageGroups: PassageChunk[][];
 };
 
 const LSContext = createContext<Ctx | null>(null);

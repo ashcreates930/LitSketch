@@ -66,11 +66,17 @@ export function buildUserMessage(args: {
   grade: number;
   benchmark: Benchmark;
   title: string;
+  titleHint?: string;
   paragraphs: string[];
 }): string {
   return `Grade: ${args.grade}
 Benchmark: ${args.benchmark.code} (${args.benchmark.topic}): ${args.benchmark.text}
-Title (if known): ${args.title.trim() || "not given"}
+Title (if known): ${args.title.trim() || "not given"}${
+    args.titleHint?.trim() && !args.title.trim()
+      ? `
+Heading lines above the text in the uploaded file (capitalization may be wrong): ${args.titleHint.trim()}`
+      : ""
+  }
 
 <passage>
 ${numberedForPrompt(args.paragraphs)}

@@ -75,11 +75,13 @@ export function VocabPage() {
                         <Cloze path={[...P, "task", "finish", j]} label={`Sentence ${j + 1}`} />
                       </p>
                     ))}
+                  <p className="say use-it">Use it in your own sentence:</p>
+                  <Lines n={3} />
                 </div>
               ) : (
                 <div className="task">
                   <Field as="p" className="prompt" path={[...P, "divergent", "prompt"]} label={`Open question for word ${i + 1}`} />
-                  <Lines n={2} />
+                  <Lines n={3} />
                   <LookFor path={[...P, "divergent", "look_for"]} />
                 </div>
               )}

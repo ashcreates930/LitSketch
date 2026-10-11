@@ -50,17 +50,20 @@ export function GuidedPage() {
                 </span>
               </h2>
               {mode === "convergent" ? (
-                <p className="say">
-                  <Cloze path={[...P, "text"]} label={`Box ${i + 1}`} />
-                  <Cue n={b.paragraph} />
-                </p>
+                <div>
+                  <p className="say">
+                    <Cloze path={[...P, "text"]} label={`Box ${i + 1}`} />
+                    <Cue n={b.paragraph} />
+                  </p>
+                  <Lines n={3} />
+                </div>
               ) : (
                 <div>
                   <p className="say">
                     <Field path={[...P, "divergent", "prompt"]} label={`Box ${i + 1} open question`} />
                     <Cue n={b.paragraph} />
                   </p>
-                  <Lines n={2} />
+                  <Lines n={3} />
                   <LookFor path={[...P, "divergent", "look_for"]} />
                 </div>
               )}

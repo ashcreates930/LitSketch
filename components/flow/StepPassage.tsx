@@ -9,7 +9,7 @@ type Props = {
   title: string;
   text: string;
   agreed: boolean;
-  onChange: (patch: { title?: string; text?: string; agreed?: boolean }) => void;
+  onChange: (patch: { title?: string; text?: string; agreed?: boolean; heading?: string[] }) => void;
   onNext: () => void;
   onSample: () => void;
 };
@@ -29,6 +29,7 @@ export function StepPassage({ headingRef, title, text, agreed, onChange, onNext,
     setUpload({ kind: "info", text: `Reading "${file.name}"…` });
     try {
       let extracted = "";
+      let heading: string[] = [];
       if (file.name.toLowerCase().endsWith(".txt")) {
         extracted = (await file.text()).trim();
       } else {
@@ -38,10 +39,11 @@ export function StepPassage({ headingRef, title, text, agreed, onChange, onNext,
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || "That file could not be read.");
         extracted = data.text;
+        heading = Array.isArray(data.heading) ? data.heading : [];
       }
       if (!extracted) throw new Error("That file has no text in it. Please paste the passage instead.");
       // The title comes from the teacher or the AI, never from the file name.
-      onChange({ text: extracted });
+      onChange({ text: extracted, heading });
       setTextError("");
       setUpload({ kind: "success", text: `Added the text from "${file.name}". Check it below; you can change anything.` });
     } catch (err) {

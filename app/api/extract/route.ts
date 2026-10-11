@@ -1,5 +1,5 @@
 import mammoth from "mammoth";
-import { extractText, getDocumentProxy } from "unpdf";
+import { extractPdf } from "@/lib/extract/pdf";
 import { clientKey, rateLimited, sameOrigin } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
@@ -32,13 +32,12 @@ export async function POST(req: Request) {
 
   try {
     let text = "";
+    let heading: string[] = [];
     if (name.endsWith(".docx")) {
       const result = await mammoth.extractRawText({ buffer: Buffer.from(bytes) });
       text = result.value;
     } else if (name.endsWith(".pdf")) {
-      const pdf = await getDocumentProxy(bytes);
-      const result = await extractText(pdf, { mergePages: false });
-      text = (result.text as string[]).join("\n\n");
+      ({ text, heading } = await extractPdf(bytes));
     } else if (name.endsWith(".txt")) {
       text = new TextDecoder().decode(bytes);
     } else {
@@ -53,7 +52,8 @@ export async function POST(req: Request) {
           : "That file has no text in it. Please paste the passage instead.",
       );
     }
-    return Response.json({ text });
+    // heading: title/author lines found above the text, used only as a hint for the real title
+    return Response.json({ text, heading });
   } catch (err) {
     console.error("extract failed", err);
     return fail("That file could not be read. Try saving it again, or paste the text instead.");

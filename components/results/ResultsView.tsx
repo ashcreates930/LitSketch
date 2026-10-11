@@ -6,7 +6,7 @@ import type { LayoutKind, Resource, ThinkerMode } from "@/lib/ai/schema";
 import type { View } from "@/lib/draft";
 import { LSProvider, setAt, type Path } from "@/templates/context";
 import { Document } from "@/templates/Document";
-import { PassagePage } from "@/templates/PassagePage";
+import { PassagePage, paginatePassage, type PassageChunk } from "@/templates/PassagePage";
 import { LAYOUT_NAMES } from "@/templates/parts";
 import { Msg } from "@/components/Msg";
 import { useHydrated } from "@/lib/useHydrated";
@@ -28,8 +28,11 @@ type Props = {
 };
 
 export function ResultsView({ headingRef, resource, onResourceChange, view, onViewChange, onStartOver }: Props) {
-  const allParas = useMemo(() => resource.passage.paragraphs.map((_, i) => i), [resource.passage.paragraphs]);
-  const [passageGroups, setPassageGroups] = useState<number[][]>([allParas]);
+  const wholeParas = useMemo<PassageChunk[][]>(
+    () => [resource.passage.paragraphs.map((text, i) => ({ i, text, first: true }))],
+    [resource.passage.paragraphs],
+  );
+  const [passageGroups, setPassageGroups] = useState<PassageChunk[][]>(wholeParas);
   const [overflow, setOverflow] = useState<string[]>([]);
   const mounted = useHydrated();
   const printRef = useRef<HTMLDivElement>(null);
@@ -41,51 +44,43 @@ export function ResultsView({ headingRef, resource, onResourceChange, view, onVi
     [resource, onResourceChange],
   );
 
-  // Split the passage into printed pages by measuring it at paper size.
+  // Flow the passage over as many printed pages as it needs, measuring at paper size.
   useLayoutEffect(() => {
     if (!mounted) return;
     const run = () => {
       const sheet = measureRef.current?.querySelector<HTMLElement>(".sheet");
       const text = sheet?.querySelector<HTMLElement>(".ptext");
       const foot = sheet?.querySelector<HTMLElement>(".foot");
-      const name = sheet?.querySelector<HTMLElement>(".namebar");
-      if (!sheet || !text || !foot || !name) return;
-      const top = text.getBoundingClientRect().top;
-      const footTop = foot.getBoundingClientRect().top - 12;
-      const firstCap = footTop - top;
-      const restCap = footTop - name.getBoundingClientRect().bottom - 16;
-      const groups: number[][] = [];
-      let current: number[] = [];
-      let start = top;
-      let cap = firstCap;
-      sheet.querySelectorAll<HTMLElement>(".para").forEach((p, i) => {
-        const r = p.getBoundingClientRect();
-        if (current.length && r.bottom - start > cap) {
-          groups.push(current);
-          current = [];
-          start = r.top;
-          cap = restCap;
-        }
-        current.push(i);
-      });
-      if (current.length) groups.push(current);
-      if (groups.length) setPassageGroups((old) => (JSON.stringify(old) === JSON.stringify(groups) ? old : groups));
+      const probe = sheet?.querySelector<HTMLElement>(".para.probe");
+      const probeText = probe?.querySelector<HTMLElement>(".pt");
+      if (!sheet || !text || !foot || !probe || !probeText) return;
+      const capacity = foot.getBoundingClientRect().top - text.getBoundingClientRect().top - 12;
+      const gap = parseFloat(getComputedStyle(text).rowGap) || 0;
+      const lineHeight = parseFloat(getComputedStyle(probe).lineHeight) || 20;
+      const height = (t: string) => {
+        probeText.textContent = t;
+        return probe.getBoundingClientRect().height;
+      };
+      const pages = paginatePassage(resource.passage.paragraphs, capacity, gap, lineHeight, height);
+      probeText.textContent = "";
+      if (pages.length) setPassageGroups((old) => (JSON.stringify(old) === JSON.stringify(pages) ? old : pages));
     };
     run();
     document.fonts?.ready.then(run);
-  }, [mounted, resource.passage.paragraphs]);
+  }, [mounted, resource.passage.paragraphs, resource.content.title]);
 
   // Fit each printed sheet on one page: shrink a little (to 85%), then warn if it still won't fit.
   useLayoutEffect(() => {
     if (!mounted) return;
     const check = () => {
       const bad: string[] = [];
-      printRef.current?.querySelectorAll<HTMLElement>(".sheet").forEach((sheet, i) => {
+      // Only note pages must fit one sheet; the passage flows over as many pages as it needs.
+      printRef.current?.querySelectorAll<HTMLElement>(".sheet:not(.layout-passage)").forEach((sheet) => {
         sheet.style.fontSize = "";
         const base = parseFloat(getComputedStyle(sheet).fontSize);
         const over = () => sheet.scrollHeight > sheet.clientHeight + 1;
         for (let px = base - 0.25; over() && px >= base * 0.85; px -= 0.25) sheet.style.fontSize = `${px}px`;
-        if (over()) bad.push(i === 0 ? LAYOUT_NAMES[view.layout] : `Passage page ${i}`);
+        if (over()) bad.push(LAYOUT_NAMES[view.layout]);
       });
       setOverflow((old) => (old.join() === bad.join() ? old : bad));
     };
@@ -238,7 +233,7 @@ export function ResultsView({ headingRef, resource, onResourceChange, view, onVi
             </div>
             <div ref={measureRef} className="measure-root ls-print" aria-hidden="true" inert>
               <LSProvider value={{ ...ctx, editable: false }}>
-                <PassagePage indexes={allParas} n={1} total={1} />
+                <PassagePage chunks={[{ i: 0, text: "", first: true }]} n={1} total={1} probe />
               </LSProvider>
             </div>
           </>,
