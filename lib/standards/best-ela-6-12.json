@@ -1,5 +1,5 @@
 {
- "source": "Florida B.E.S.T. ELA Standards (FLDOE), Reading and Vocabulary strands, grades 6-12. Text retrieved 2026-10-11 from the Achievement Standards Network listing at commonplanner.com; spot-check against the official FLDOE document.",
+ "source": "Florida B.E.S.T. Standards: English Language Arts (FLDOE, elabeststandardsfinal.pdf), Reading and Vocabulary strands, grades 6-12. Wording taken from the grade-level benchmark sections of the official PDF on 2026-10-11.",
  "benchmarks": [
   {
    "code": "ELA.6.R.1.1",
@@ -227,7 +227,7 @@
    "code": "ELA.8.R.2.4",
    "grade": 8,
    "topic": "Argument",
-   "text": "Track the development of an argument, analyzing the types of reasoning used and their effectiveness, identifying ways in which the argument could be improved."
+   "text": "Track the development of an argument, analyzing the types of reasoning used and their effectiveness and identifying ways in which the argument could be improved."
   },
   {
    "code": "ELA.8.R.3.1",
@@ -407,7 +407,7 @@
    "code": "ELA.10.R.2.4",
    "grade": 10,
    "topic": "Argument",
-   "text": "Compare the development of two opposing arguments on the same topic, evaluating the effectiveness and validity of the claims, and analyzing the ways in which the authors use the same information to achieve different ends."
+   "text": "Compare the development of two opposing arguments on the same topic, evaluating the effectiveness and validity of the claims and analyzing the ways in which the authors use the same information to achieve different ends."
   },
   {
    "code": "ELA.10.R.3.1",
@@ -515,7 +515,7 @@
    "code": "ELA.11.R.3.3",
    "grade": 11,
    "topic": "Comparing texts",
-   "text": "Compare and contrast how contemporaneous authors address related topics, comparing the authors' use of reasoning, and analyzing the texts within the context of the time period."
+   "text": "Compare and contrast how contemporaneous authors address related topics, comparing the authors' use of reasoning and analyzing the texts within the context of the time period."
   },
   {
    "code": "ELA.11.R.3.4",
@@ -569,7 +569,7 @@
    "code": "ELA.12.R.2.1",
    "grade": 12,
    "topic": "Text structure",
-   "text": "Evaluate the structure(s) and features in texts, identifying how the author could make the text(s) more effective."
+   "text": "Evaluate the structure(s) and features in text(s), identifying how the author could make the text(s) more effective."
   },
   {
    "code": "ELA.12.R.2.2",

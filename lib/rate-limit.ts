@@ -6,14 +6,34 @@ import "server-only";
  */
 const hits = new Map<string, number[]>();
 
+function recent(key: string, windowMs: number): number[] {
+  const now = Date.now();
+  return (hits.get(key) ?? []).filter((t) => now - t < windowMs);
+}
+
+function record(key: string, list: number[]): void {
+  list.push(Date.now());
+  hits.set(key, list);
+  if (hits.size > 5000) hits.clear();
+}
+
+/** Counts this request and reports whether the key is over its limit. */
 export function rateLimited(key: string, max: number, windowMs: number): boolean {
   if (process.env.NODE_ENV !== "production") return false;
-  const now = Date.now();
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
-  recent.push(now);
-  hits.set(key, recent);
-  if (hits.size > 5000) hits.clear();
-  return recent.length > max;
+  const list = recent(key, windowMs);
+  record(key, list);
+  return list.length > max;
+}
+
+/** For counting only failures (like wrong access codes): check first, record later. */
+export function overLimit(key: string, max: number, windowMs: number): boolean {
+  if (process.env.NODE_ENV !== "production") return false;
+  return recent(key, windowMs).length >= max;
+}
+
+export function recordFailure(key: string, windowMs: number): void {
+  if (process.env.NODE_ENV !== "production") return;
+  record(key, recent(key, windowMs));
 }
 
 export function clientKey(req: Request): string {

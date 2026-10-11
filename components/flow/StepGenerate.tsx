@@ -13,6 +13,12 @@ type Props = {
   benchmarkCode: string;
   busy: boolean;
   error: string;
+  /** shown in production, or once the server asks for it */
+  showCode: boolean;
+  accessCode: string;
+  codeError: string;
+  codeRef: RefObject<HTMLInputElement | null>;
+  onAccessCodeChange: (code: string) => void;
   onBack: () => void;
   onGenerate: () => void;
 };
@@ -23,7 +29,22 @@ const YOU_GET = [
   { name: "An answer key", desc: "answers for the convergent notes and look-fors for the divergent notes" },
 ];
 
-export function StepGenerate({ headingRef, title, text, grade, benchmarkCode, busy, error, onBack, onGenerate }: Props) {
+export function StepGenerate({
+  headingRef,
+  title,
+  text,
+  grade,
+  benchmarkCode,
+  busy,
+  error,
+  showCode,
+  accessCode,
+  codeError,
+  codeRef,
+  onAccessCodeChange,
+  onBack,
+  onGenerate,
+}: Props) {
   const bm = findBenchmark(benchmarkCode);
   const paragraphs = splitParagraphs(text);
 
@@ -68,6 +89,30 @@ export function StepGenerate({ headingRef, title, text, grade, benchmarkCode, bu
         ))}
       </ul>
       <p className="hint">Every page prints in black and white with the benchmark code on it. You can change any words before printing.</p>
+
+      {showCode && (
+        <div className="field" style={{ marginTop: "1.25rem", marginBottom: 0 }}>
+          <label htmlFor="access-code">Teacher access code</label>
+          <p className="hint" id="access-hint">
+            Type the code you were given. This device will remember it.
+          </p>
+          <input
+            id="access-code"
+            ref={codeRef}
+            type="text"
+            value={accessCode}
+            onChange={(e) => onAccessCodeChange(e.target.value)}
+            autoComplete="off"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            aria-describedby="access-hint access-error"
+            aria-invalid={codeError ? true : undefined}
+            style={{ maxWidth: "20rem" }}
+          />
+          <Msg id="access-error">{codeError}</Msg>
+        </div>
+      )}
 
       <div className="actions">
         <button type="button" className="btn" onClick={onBack} disabled={busy}>

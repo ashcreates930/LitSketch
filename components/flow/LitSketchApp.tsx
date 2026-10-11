@@ -7,6 +7,7 @@ import { StepStandard } from "./StepStandard";
 import { StepGenerate } from "./StepGenerate";
 import { ResultsView } from "@/components/results/ResultsView";
 import { useHydrated } from "@/lib/useHydrated";
+import { loadAccessCode, saveAccessCode } from "@/lib/access-code-store";
 import { DEFAULT_VIEW, EMPTY_DRAFT, clearDraft, loadDraft, saveDraft, type Draft } from "@/lib/draft";
 import { splitParagraphs } from "@/lib/passage";
 import { findBenchmark } from "@/lib/standards";
@@ -23,6 +24,10 @@ export function LitSketchApp() {
   });
   const [busy, setBusy] = useState(false);
   const [genError, setGenError] = useState("");
+  const [codeError, setCodeError] = useState("");
+  const [codeAsked, setCodeAsked] = useState(false);
+  const [accessCode, setAccessCode] = useState(() => (typeof window === "undefined" ? "" : loadAccessCode()));
+  const codeRef = useRef<HTMLInputElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const moved = useRef(false);
 
@@ -51,18 +56,26 @@ export function LitSketchApp() {
     const paragraphs = splitParagraphs(draft.text);
     setBusy(true);
     setGenError("");
+    setCodeError("");
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: draft.title, paragraphs, grade: draft.grade, benchmarkCode: bm.code }),
+        body: JSON.stringify({ title: draft.title, paragraphs, grade: draft.grade, benchmarkCode: bm.code, accessCode }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
         content?: Generation;
         warnings?: string[];
         demo?: boolean;
+        field?: "accessCode";
       };
+      if (data.field === "accessCode") {
+        setCodeAsked(true);
+        setCodeError(data.error ?? "Please check the access code.");
+        requestAnimationFrame(() => codeRef.current?.focus());
+        return;
+      }
       if (!res.ok || !data.content) throw new Error(data.error || "LitSketch couldn't finish your notes. Please try again.");
       const resource: Resource = {
         id: crypto.randomUUID?.() ?? String(Date.now()),
@@ -75,6 +88,7 @@ export function LitSketchApp() {
         warnings: data.warnings ?? [],
         demo: !!data.demo,
       };
+      saveAccessCode(accessCode);
       moved.current = true;
       patch({ resource, step: 4, view: { ...DEFAULT_VIEW, layout: resource.suggestedLayout } });
     } catch (err) {
@@ -147,6 +161,14 @@ export function LitSketchApp() {
           benchmarkCode={draft.benchmarkCode}
           busy={busy}
           error={genError}
+          showCode={process.env.NODE_ENV === "production" || codeAsked}
+          accessCode={accessCode}
+          codeError={codeError}
+          codeRef={codeRef}
+          onAccessCodeChange={(c) => {
+            setAccessCode(c);
+            if (codeError) setCodeError("");
+          }}
           onBack={() => go(2)}
           onGenerate={generate}
         />

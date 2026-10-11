@@ -35,6 +35,15 @@ With no `OPENAI_API_KEY`, development runs in **sample mode**: every request ret
 
 See `.env.example`. `OPENAI_API_KEY` is only read on the server (`lib/ai/generate.ts` imports `server-only`). Never give it a `NEXT_PUBLIC_` prefix.
 
+**Teacher access code.** Set `LITSKETCH_ACCESS_CODE` before sharing the deployed link. Teachers type it on step 3; this device remembers it after it works once.
+- The server checks the code on every generation (`lib/access.ts`), comparing in constant time.
+- Wrong codes get a plain message next to the field.
+- Ten wrong tries from one address in an hour lock that address out for the hour.
+- The per-address limit of 30 generations an hour still applies as a second layer.
+- In production, if the variable is missing, generation is off rather than open.
+
+**Illustration review:** `/illustrations` shows every object and icon with its keywords and the Preview colored toggle. It is not indexed by search engines.
+
 ## How it works
 
 | Piece | Where |
@@ -78,4 +87,4 @@ PDF export uses `@sparticuz/chromium`. The route allows 60 seconds and needs abo
 
 ## Benchmark source
 
-The benchmark wording comes from the Florida B.E.S.T. ELA Standards (FLDOE). It was retrieved 2026-10-11 from the Achievement Standards Network listing. Spot-check it against the official FLDOE document before the pilot.
+The benchmark wording comes from the official FLDOE document, *Florida B.E.S.T. Standards: English Language Arts* (elabeststandardsfinal.pdf), grade-level sections for grades 6–12, Reading and Vocabulary strands. Checked 2026-10-11.

@@ -857,3 +857,54 @@ span.editable {
   outline: 3px solid var(--focus);
   background: #eef3fa;
 }
+
+/* ---------- Illustration review page (/illustrations) ---------- */
+.gallery-toolbar {
+  margin-bottom: 1.25rem;
+}
+.sheet.gallery .gallery-h {
+  font-size: 1.8em;
+  margin: 0.4em 0 0.6em;
+  --hc: var(--c2);
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: 1.25rem;
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+}
+.gallery-grid-icons {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+}
+.gallery-card {
+  border-top: 2.5px dashed var(--rule);
+  padding-top: 0.75rem;
+}
+.gallery-art {
+  padding: 0.5rem;
+}
+.gallery-art svg.art {
+  max-height: 11rem;
+}
+.gallery-art-icon svg.art {
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: 0 auto;
+}
+.gallery-name {
+  font-family: var(--hand);
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 0.4rem 0 0;
+}
+.gallery-inside {
+  font-size: 0.95rem;
+  margin: 0.1rem 0 0;
+}
+.gallery-tags {
+  font-size: 0.9rem;
+  color: var(--graphite);
+  margin: 0.2rem 0 0;
+}

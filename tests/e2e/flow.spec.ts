@@ -154,3 +154,14 @@ test("PDF export downloads a real PDF on desktop", async ({ page, browserName, i
   expect(bytes.subarray(0, 5).toString()).toBe("%PDF-");
   await expect(page.locator("#pdf-msg")).toContainText("Saved");
 });
+
+test("illustration review page: every object and icon, labeled, with Preview colored", async ({ page }) => {
+  await page.goto("/illustrations");
+  await expect(page.getByRole("heading", { name: "Illustration library" })).toBeVisible();
+  await expect(page.locator(".gallery-grid").first().locator(".gallery-card")).toHaveCount(29);
+  await expect(page.locator(".gallery-grid-icons .gallery-card")).toHaveCount(19);
+  await page.getByRole("button", { name: "Preview colored" }).click();
+  await expect(page.locator(".ls-screen")).toHaveClass(/colored/);
+  await expectNoHorizontalScroll(page);
+  await expectAccessible(page);
+});

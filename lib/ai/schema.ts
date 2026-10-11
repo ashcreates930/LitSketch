@@ -136,6 +136,7 @@ export const GenerateRequestSchema = z.object({
   paragraphs: z.array(z.string().max(6000)).min(1).max(400),
   grade: z.number().int().min(6).max(12),
   benchmarkCode: z.string().regex(/^ELA\.\d{1,2}\.(R|V)\.\d\.\d$/),
+  accessCode: z.string().max(200).optional(),
 });
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;
 

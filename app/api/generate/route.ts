@@ -2,18 +2,23 @@ import { GenerateRequestSchema } from "@/lib/ai/schema";
 import { GenerationError, generateResource } from "@/lib/ai/generate";
 import { findBenchmark } from "@/lib/standards";
 import { MAX_WORDS, MIN_WORDS, wordCount } from "@/lib/passage";
-import { clientKey, rateLimited, sameOrigin } from "@/lib/rate-limit";
+import { clientKey, overLimit, rateLimited, recordFailure, sameOrigin } from "@/lib/rate-limit";
+import { checkAccessCode } from "@/lib/access";
 
 export const maxDuration = 300;
 
-function fail(message: string, status: number) {
-  return Response.json({ error: message }, { status });
+const HOUR = 60 * 60 * 1000;
+
+function fail(message: string, status: number, field?: "accessCode") {
+  return Response.json({ error: message, field }, { status });
 }
 
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return fail("This request came from outside LitSketch.", 403);
-  if (rateLimited(`gen:${clientKey(req)}`, 30, 60 * 60 * 1000)) {
-    return fail("You've made a lot of resources this hour. Please wait a few minutes and try again.", 429);
+  const who = clientKey(req);
+  // Too many wrong codes from one address: stop guessing for an hour.
+  if (overLimit(`code:${who}`, 10, HOUR)) {
+    return fail("Too many tries with the wrong access code. Please wait an hour, or ask for the code again.", 429, "accessCode");
   }
 
   let body: unknown;
@@ -24,7 +29,18 @@ export async function POST(req: Request) {
   }
   const parsed = GenerateRequestSchema.safeParse(body);
   if (!parsed.success) return fail("Some of the information was missing. Please go back and check each step.", 400);
-  const { title, paragraphs, grade, benchmarkCode } = parsed.data;
+  const { title, paragraphs, grade, benchmarkCode, accessCode } = parsed.data;
+
+  // Layer 1: teacher access code, checked here on the server.
+  const access = checkAccessCode(accessCode);
+  if (!access.ok) {
+    if (access.status === 401 && accessCode?.trim()) recordFailure(`code:${who}`, HOUR);
+    return fail(access.error, access.status, access.status === 401 ? "accessCode" : undefined);
+  }
+  // Layer 2: per-address limit on generations.
+  if (rateLimited(`gen:${who}`, 30, HOUR)) {
+    return fail("You've made a lot of resources this hour. Please wait a few minutes and try again.", 429);
+  }
 
   const benchmark = findBenchmark(benchmarkCode);
   if (!benchmark || benchmark.grade !== grade) {
