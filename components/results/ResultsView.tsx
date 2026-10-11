@@ -37,6 +37,8 @@ export function ResultsView({ headingRef, resource, onResourceChange, view, onVi
   const mounted = useHydrated();
   const printRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
+  const notesMeasureRef = useRef<HTMLDivElement>(null);
+  const [notePages, setNotePages] = useState<{ key: string; pages: number[][] } | null>(null);
   const modeRefs = useRef<Record<ThinkerMode, HTMLButtonElement | null>>({ convergent: null, divergent: null });
 
   const update = useCallback(
@@ -69,24 +71,49 @@ export function ResultsView({ headingRef, resource, onResourceChange, view, onVi
     document.fonts?.ready.then(run);
   }, [mounted, resource.passage.paragraphs, resource.content.title]);
 
-  // Fit each printed sheet on one page: shrink a little (to 85%), then warn if it still won't fit.
+  // Note pages: printed text never goes below 11pt. Measure each whole section at paper size
+  // and start a new page whenever the next one won't fit. Only a single section taller than a
+  // whole page is reported (the passage always flows and is never flagged).
+  const pageKey = `${view.layout}|${view.mode}|${view.answers}`;
   useLayoutEffect(() => {
     if (!mounted) return;
-    const check = () => {
-      const bad: string[] = [];
-      // Only note pages must fit one sheet; the passage flows over as many pages as it needs.
-      printRef.current?.querySelectorAll<HTMLElement>(".sheet:not(.layout-passage)").forEach((sheet) => {
-        sheet.style.fontSize = "";
-        const base = parseFloat(getComputedStyle(sheet).fontSize);
-        const over = () => sheet.scrollHeight > sheet.clientHeight + 1;
-        for (let px = base - 0.25; over() && px >= base * 0.85; px -= 0.25) sheet.style.fontSize = `${px}px`;
-        if (over()) bad.push(LAYOUT_NAMES[view.layout]);
+    const run = () => {
+      const sheet = notesMeasureRef.current?.querySelector<HTMLElement>(".sheet");
+      const name = sheet?.querySelector<HTMLElement>(".namebar");
+      const foot = sheet?.querySelector<HTMLElement>(".foot");
+      const probe = sheet?.querySelector<HTMLElement>(".contd-probe");
+      if (!sheet || !name || !foot || !probe) return;
+      const blocks = Array.from(sheet.querySelectorAll<HTMLElement>(":scope > .blk"));
+      if (!blocks.length) return;
+      const PAGE = 10.1 * 96; // printable height of a letter sheet at 0.4in margins, in CSS px
+      const top = sheet.getBoundingClientRect().top;
+      const footH = foot.getBoundingClientRect().height + 28; // footer plus a safety margin
+      const contdH = probe.getBoundingClientRect().height + parseFloat(getComputedStyle(probe).marginTop) + parseFloat(getComputedStyle(probe).marginBottom);
+      const headH = name.getBoundingClientRect().bottom - top;
+      const firstCap = PAGE - headH - footH;
+      const restCap = firstCap - contdH;
+      const tops = blocks.map((el) => el.getBoundingClientRect().top);
+      const heights = blocks.map((el, i) => (i < blocks.length - 1 ? tops[i + 1] : el.getBoundingClientRect().bottom) - tops[i]);
+      const pages: number[][] = [[]];
+      const tooBig: number[] = [];
+      let used = 0;
+      heights.forEach((h, i) => {
+        const cap = pages.length === 1 ? firstCap : restCap;
+        if (pages[pages.length - 1].length && used + h > cap) {
+          pages.push([]);
+          used = 0;
+        }
+        if (h > (pages.length === 1 ? firstCap : restCap)) tooBig.push(i);
+        pages[pages.length - 1].push(i);
+        used += h;
       });
+      setNotePages((old) => (old && JSON.stringify(old.pages) === JSON.stringify(pages) && old.key === pageKey ? old : { key: pageKey, pages }));
+      const bad = tooBig.length ? [LAYOUT_NAMES[view.layout]] : [];
       setOverflow((old) => (old.join() === bad.join() ? old : bad));
     };
-    check();
-    document.fonts?.ready.then(check);
-  }, [mounted, resource, passageGroups, view.layout, view.mode, view.answers, view.withPassage]);
+    run();
+    document.fonts?.ready.then(run);
+  }, [mounted, resource, pageKey, view.layout]);
 
   function onModeKey(e: KeyboardEvent<HTMLButtonElement>) {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -97,8 +124,9 @@ export function ResultsView({ headingRef, resource, onResourceChange, view, onVi
   }
 
   const c = resource.content;
-  const ctx = { resource, update, layout: view.layout, mode: view.mode, passageGroups };
-  const sheetCount = 1 + (view.withPassage ? passageGroups.length : 0);
+  const pagesForView = notePages?.key === pageKey ? notePages.pages : undefined;
+  const ctx = { resource, update, layout: view.layout, mode: view.mode, passageGroups, notePages: pagesForView };
+  const sheetCount = (pagesForView?.length ?? 1) + (view.withPassage ? passageGroups.length : 0);
 
   return (
     <div className="container-wide">
@@ -234,6 +262,11 @@ export function ResultsView({ headingRef, resource, onResourceChange, view, onVi
             <div ref={measureRef} className="measure-root ls-print" aria-hidden="true" inert>
               <LSProvider value={{ ...ctx, editable: false }}>
                 <PassagePage chunks={[{ i: 0, text: "", first: true }]} n={1} total={1} probe />
+              </LSProvider>
+            </div>
+            <div ref={notesMeasureRef} className={`measure-root ls-print${view.answers ? " answers" : ""}`} aria-hidden="true" inert>
+              <LSProvider value={{ ...ctx, editable: false, measuring: true }}>
+                <Document withPassage={false} />
               </LSProvider>
             </div>
           </>,

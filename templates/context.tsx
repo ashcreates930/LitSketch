@@ -14,8 +14,12 @@ type Ctx = {
   update: (path: Path, value: string) => void;
   layout: LayoutKind;
   mode: ThinkerMode;
-  /** paragraph indexes grouped into printed passage pages */
+  /** paragraph pieces grouped into printed passage pages */
   passageGroups: PassageChunk[][];
+  /** note-page sections grouped into printed pages (11pt minimum; pages grow instead of shrinking) */
+  notePages?: number[][];
+  /** rendering the unclamped measuring copy */
+  measuring?: boolean;
 };
 
 const LSContext = createContext<Ctx | null>(null);

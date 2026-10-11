@@ -2,7 +2,7 @@
 
 import { useId, type CSSProperties, type ReactNode } from "react";
 import { Field, useLS } from "./context";
-import { AskBubble, Cloze, Cue, Lines, LookFor, Sheet } from "./parts";
+import { AskBubble, Cloze, Cue, Lines, LookFor, NoteSheets } from "./parts";
 import { CenterBook, IconSvg, MapArrows, ThemeRibbon, pickIcon } from "./art/icons";
 
 /** Hub-and-orbit colors from storymap.html, in reading order around the map. */
@@ -20,8 +20,9 @@ export function MapPage() {
   const icons = m.orbits.map((o) => pickIcon(`${o.heading} ${o.icon_hint}`, used));
   const byline = [resource.content.title, resource.content.author].filter(Boolean).join(" · ");
 
-  return (
-    <Sheet kind="map" label={`${m.title}, ${mode} version`}>
+  // Sections: heading and map together (a heading never sits alone), the banner, the question bubble.
+  const blocks = [
+    <div key="map">
       <div className="title">
         <h1 className="hollow">
           <Field path={["content", "map", "title"]} label="Map title" />
@@ -29,7 +30,6 @@ export function MapPage() {
         <p className="sub">{byline}</p>
       </div>
       <Field as="p" className="say how" path={["content", "map", "how"]} label="How to use the map" />
-
       <div className="map">
         <MapArrows />
         <div className="center">
@@ -70,8 +70,9 @@ export function MapPage() {
           );
         })}
       </div>
+    </div>,
 
-      <section className="theme" aria-labelledby={`${uid}th`}>
+    <section key="theme" className="theme" aria-labelledby={`${uid}th`}>
         <ThemeRibbon />
         <div className="inner">
           <h2 className="hollow" id={`${uid}th`}>
@@ -85,11 +86,11 @@ export function MapPage() {
           <Lines n={1} />
           {mode === "divergent" && <LookFor path={["content", "map", "banner", "divergent", "look_for"]} />}
         </div>
-      </section>
+    </section>,
+    ...(mode === "divergent" ? [<AskBubble key="ask" />] : []),
+  ];
 
-      {mode === "divergent" && <AskBubble />}
-    </Sheet>
-  );
+  return <NoteSheets kind="map" label={`${m.title}, ${mode} version`} continued={m.title} blocks={blocks} />;
 }
 
 /** A circle followed by the arrow phrase that leads to the next one. */

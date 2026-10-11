@@ -19,6 +19,8 @@ export default defineConfig({
   use: {
     baseURL: process.env.BASE_URL ?? "http://localhost:3000",
     trace: "retain-on-failure",
+    // Use the built-in sample content, never the real AI (development server only).
+    extraHTTPHeaders: { "x-litsketch-demo": "1" },
   },
   webServer: process.env.BASE_URL
     ? undefined
@@ -29,7 +31,8 @@ export default defineConfig({
           url: PROD_URL,
           reuseExistingServer: true,
           timeout: 300_000,
-          env: { LITSKETCH_ACCESS_CODE: TEST_ACCESS_CODE, LITSKETCH_DEMO: "1" },
+          // OPENAI_API_KEY is blanked so this server uses the sample even when .env.local has a key.
+          env: { LITSKETCH_ACCESS_CODE: TEST_ACCESS_CODE, LITSKETCH_DEMO: "1", OPENAI_API_KEY: "" },
         },
       ],
   projects: [

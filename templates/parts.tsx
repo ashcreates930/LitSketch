@@ -21,17 +21,20 @@ export function Sheet({
   children,
   before,
   footRight,
+  measure = false,
 }: {
   kind: LayoutKind | "passage";
   label: string;
   children: ReactNode;
   before?: ReactNode;
   footRight?: string;
+  /** the unclamped copy used to measure where pages break */
+  measure?: boolean;
 }) {
   const { resource, mode } = useLS();
   const modeName = mode === "convergent" ? "Convergent" : "Divergent";
   return (
-    <article className={`sheet layout-${kind} mode-${mode}`} aria-label={label}>
+    <article className={`sheet layout-${kind} mode-${mode}${measure ? " measure" : ""}`} aria-label={label}>
       {before}
       <div className="namebar">
         <span>
@@ -47,6 +50,71 @@ export function Sheet({
         <span>{footRight ?? `${LAYOUT_NAMES[kind]} · ${modeName}`}</span>
       </div>
     </article>
+  );
+}
+
+function isPartition(pages: number[][] | undefined, n: number): pages is number[][] {
+  if (!pages?.length) return false;
+  const flat = pages.flat();
+  return flat.length === n && flat.every((v, i) => v === i);
+}
+
+/**
+ * A note layout as whole sections ("blocks") spread over as many letter pages as it
+ * needs. Printed text never shrinks below 11pt; when a page is full, the next whole
+ * section (for example the last vocab word) moves to a new page.
+ * Page breaks come from measuring a print-size copy (see ResultsView).
+ */
+export function NoteSheets({
+  kind,
+  label,
+  continued,
+  blocks,
+  before,
+}: {
+  kind: LayoutKind;
+  label: string;
+  /** short heading for continuation pages, e.g. "Doodle Vocab" */
+  continued: string;
+  blocks: ReactNode[];
+  before?: ReactNode;
+}) {
+  const { notePages, measuring, mode } = useLS();
+  const wrap = (i: number) => (
+    <div key={i} className="blk" data-blk={i}>
+      {blocks[i]}
+    </div>
+  );
+  if (measuring) {
+    return (
+      <Sheet kind={kind} label={label} before={before} measure>
+        {blocks.map((_, i) => wrap(i))}
+        <p className="contd contd-probe">{continued} · continued</p>
+      </Sheet>
+    );
+  }
+  const pages = isPartition(notePages, blocks.length) ? notePages : [blocks.map((_, i) => i)];
+  const total = pages.length;
+  const modeName = mode === "convergent" ? "Convergent" : "Divergent";
+  return (
+    <>
+      {pages.map((idx, n) => (
+        <Sheet
+          key={n}
+          kind={kind}
+          label={total > 1 ? `${label}, page ${n + 1} of ${total}` : label}
+          before={n === 0 ? before : undefined}
+          footRight={total > 1 ? `${LAYOUT_NAMES[kind]} · ${modeName} · page ${n + 1} of ${total}` : undefined}
+        >
+          {n > 0 && (
+            <p className="contd">
+              {continued} · continued
+            </p>
+          )}
+          {idx.map(wrap)}
+        </Sheet>
+      ))}
+    </>
   );
 }
 

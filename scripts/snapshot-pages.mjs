@@ -9,7 +9,11 @@ const out = process.argv[3] ?? "test-results/pages";
 await mkdir(out, { recursive: true });
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1100, height: 900 }, deviceScaleFactor: 1.5 });
+const page = await browser.newPage({
+  viewport: { width: 1100, height: 900 },
+  deviceScaleFactor: 1.5,
+  extraHTTPHeaders: { "x-litsketch-demo": "1" }, // sample content, no API cost
+});
 await page.goto(base);
 await page.evaluate(() => localStorage.clear());
 await page.reload();

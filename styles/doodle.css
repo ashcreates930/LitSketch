@@ -275,3 +275,81 @@
 .ls-print .layout-vocab.mode-convergent .text .ex { margin-bottom: 0.35em; }
 .sheet .use-it { margin-top: 0.35em; font-weight: 700; }
 .layout-passage .para .pmark { font-family: var(--body); font-weight: 700; margin-right: 0.08em; }
+
+/* ---------- Pages grow instead of type shrinking ----------
+   Printed text is never below 11pt. Base sheet size 15.44px makes .say (0.95em) exactly 11pt;
+   nothing inside a printed sheet is smaller than that. Note layouts break between whole
+   sections ("blocks") onto extra pages when needed (see NoteSheets). */
+.sheet .blk { display: flow-root; }
+.sheet .contd { font-family: var(--hand); font-weight: 700; font-size: 1.1em; margin: 0.5em 0 0.2em; color: var(--graphite); }
+.ls-print .sheet.measure { height: auto; overflow: visible; }
+.ls-print :is(.layout-vocab, .layout-map, .layout-guided, .layout-passage) { font-size: 15.44px; }
+.ls-print .sheet .std,
+.ls-print .sheet .foot,
+.ls-print .sheet .key,
+.ls-print .layout-map .orb .say,
+.ls-print .layout-map .orb .cue { font-size: 0.95em; }
+.ls-print .sheet .say .cue { font-size: 1em; }
+.ls-print .sheet .cue { font-size: 0.95em; }
+.ls-print .sheet .tag { font-size: 1em; }
+
+/* Story map on paper at 11pt: use the full width, a smaller center book, and a smaller title,
+   so the heading and map fit on one page. The banner may move to page 2. */
+.ls-print .layout-map .map,
+.ls-print .layout-map.mode-divergent .map { width: 100%; grid-template-columns: 1fr 0.42fr 1fr; gap: 0.2em; }
+.ls-print .layout-map .center { margin: 0 -1.2em; }
+.ls-print .layout-map .orb { padding: 7% 11% 6%; }
+.ls-print .layout-map .title .hollow { font-size: 2.6em; }
+.ls-print .layout-map .theme,
+.ls-print .layout-map.mode-divergent .theme { width: 90%; margin: 0.6em auto 0; }
+.ls-print .layout-map .title { margin-top: 0; }
+.ls-print .layout-map .how { margin: 0.1em auto 0.4em; }
+.ls-print .layout-map .orb svg { height: 2em; }
+.ls-print .layout-map .orb h2 { font-size: 1.35em; margin: 0.05em 0 0.15em; }
+.ls-print .layout-map .orb .say { line-height: 1.5; margin: 0.1em 0; }
+.ls-print .layout-map .orb .lines {
+  width: 82%;
+  height: calc(1.7em * var(--n, 2));
+  background: repeating-linear-gradient(to bottom, transparent 0 calc(1.7em - 2px), var(--rule) calc(1.7em - 2px) 1.7em);
+}
+/* Vocab on paper at 11pt: wider text column (less wrapping), slightly smaller art and title,
+   so two words share a page and the third moves to page 2 instead of one word per page. */
+.ls-print .layout-vocab .vrow { grid-template-columns: 1.45fr 1fr; gap: 0.6em 1em; padding: 0.5em 0; }
+.ls-print .layout-vocab .vrow .art,
+.ls-print .layout-vocab.mode-convergent .vrow .art { max-height: 1.6in; }
+.ls-print .layout-vocab .title { margin: 0 0 0.2em; }
+.ls-print .layout-vocab .title .hollow,
+.ls-print .layout-vocab.mode-convergent .title .hollow { font-size: 2.2em; }
+.ls-print .layout-vocab .title svg { width: 4.5em; }
+.ls-print .layout-vocab .task { padding: 0.45em 0.75em; }
+.ls-print .layout-vocab .text .def { margin-top: 0.3em; }
+/* On paper the task box runs the full width under the word and its drawing, so a word takes
+   about 3.5in instead of 4.5in at 11pt (the screen keeps the reference layout). */
+.ls-print .layout-vocab .vrow { grid-template-columns: 1.45fr 1fr; grid-template-areas: "head art" "def art" "ex art" "task task"; align-items: start; }
+.ls-print .layout-vocab .vrow.flip { grid-template-columns: 1fr 1.45fr; grid-template-areas: "art head" "art def" "art ex" "task task"; }
+.ls-print .layout-vocab .vrow .text { display: contents; }
+.ls-print .layout-vocab .vrow .head { grid-area: head; }
+.ls-print .layout-vocab .vrow .def { grid-area: def; margin: 0; }
+.ls-print .layout-vocab .vrow .ex { grid-area: ex; margin: 0; }
+.ls-print .layout-vocab .vrow .task { grid-area: task; }
+.ls-print .layout-vocab .vrow .art-wrap { grid-area: art; align-self: center; }
+.ls-print .layout-vocab .vrow { row-gap: 0.3em; }
+.ls-print .layout-vocab .vrow .art,
+.ls-print .layout-vocab.mode-convergent .vrow .art { max-height: 1.3in; }
+.ls-print .layout-vocab .art-wrap.tt,
+.ls-print .layout-vocab .art-wrap.tb { padding-top: 2.9em; padding-bottom: 0; }
+.ls-print .layout-vocab .art-wrap.tb .tag { top: 0; bottom: auto; left: auto; right: 0; }
+.ls-print .layout-vocab .tag { max-width: 17em; padding-top: 0.35em; padding-bottom: 0.35em; }
+.ls-print .layout-vocab .io { gap: 0.15em; margin-top: 0.15em; }
+.ls-print .layout-vocab .io .box { height: 1.6em; }
+.ls-print .layout-vocab .fillrow { margin: 0.15em 0; }
+.ls-print .layout-vocab .chips { margin-top: 0.1em; }
+.ls-print .layout-vocab .use-it { margin-top: 0.2em; }
+.ls-print .layout-vocab .lines {
+  height: calc(1.7em * var(--n, 2));
+  background: repeating-linear-gradient(to bottom, transparent 0 calc(1.7em - 2px), var(--rule) calc(1.7em - 2px) 1.7em);
+}
+.ls-print .layout-vocab .title .hollow,
+.ls-print .layout-vocab.mode-convergent .title .hollow { font-size: 1.9em; }
+.ls-print .layout-vocab .title .sub { margin-top: 0.1em; }
+.ls-print .layout-vocab .title svg { width: 3.6em; }

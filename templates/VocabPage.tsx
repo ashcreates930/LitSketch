@@ -2,7 +2,7 @@
 
 import { useId, type CSSProperties } from "react";
 import { Field, useLS } from "./context";
-import { AskBubble, Cloze, Cue, Lines, LookFor, Sheet } from "./parts";
+import { AskBubble, Cloze, Cue, Lines, LookFor, NoteSheets } from "./parts";
 import { ArtSvg, PencilPaper, pickObject } from "./art/library";
 
 /** Doodle vocabulary, built from design-reference/vocab.html. */
@@ -13,9 +13,9 @@ export function VocabPage() {
   const used = new Set<string>();
   const art = v.words.map((w) => pickObject(w.picture, `${w.word} ${w.meaning}`, used));
 
-  return (
-    <Sheet kind="vocab" label={`Doodle vocabulary, ${mode} version`}>
-      <div className="title">
+  // Sections: the title, one per word, then the question bubble. Words move to a new page whole.
+  const blocks = [
+    <div key="title" className="title">
         <div>
           <h1 className="hollow">
             Doodle <span>Vocab</span>
@@ -23,15 +23,15 @@ export function VocabPage() {
           <Field as="p" className="sub" path={["content", "vocab", "subtitle"]} label="Subtitle" />
         </div>
         <PencilPaper />
-      </div>
-
-      {v.words.map((w, i) => {
+    </div>,
+    ...v.words.map((w, i) => {
         const P = ["content", "vocab", "words", i] as const;
         const t = w.task;
         const flip = i % 2 === 1;
         return (
           <section key={i} className={`vrow${flip ? " flip" : ""}`} aria-labelledby={`${uid}w${i}`}>
             <div className="text">
+              <div className="head">
               <h2 className="bar" id={`${uid}w${i}`}>
                 <span className="n">{i + 1}.</span>
                 <Field className="w" path={[...P, "word"]} label={`Word ${i + 1}`} />
@@ -39,6 +39,7 @@ export function VocabPage() {
               <span className="pos">
                 (<Field path={[...P, "part_of_speech"]} label={`Part of speech for word ${i + 1}`} />)
               </span>
+              </div>
               <p className="say def">
                 <b>Meaning:</b> <Field path={[...P, "meaning"]} label={`Meaning of word ${i + 1}`} />
               </p>
@@ -95,9 +96,9 @@ export function VocabPage() {
             </div>
           </section>
         );
-      })}
+      }),
+    ...(mode === "divergent" ? [<AskBubble key="ask" />] : []),
+  ];
 
-      {mode === "divergent" && <AskBubble />}
-    </Sheet>
-  );
+  return <NoteSheets kind="vocab" label={`Doodle vocabulary, ${mode} version`} continued="Doodle Vocab" blocks={blocks} />;
 }

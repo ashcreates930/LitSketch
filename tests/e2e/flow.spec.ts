@@ -182,3 +182,46 @@ test("illustration review page: every object and icon, labeled, with Preview col
   await expectNoHorizontalScroll(page);
   await expectAccessible(page);
 });
+
+test.describe("print type size", () => {
+  test.beforeEach(async ({ page }) => runSampleFlow(page));
+
+  test("every printed note page keeps all text at 11pt or larger; pages grow instead", async ({ page }) => {
+    for (const layout of ["Doodle vocabulary", "Story map", "Guided notes"]) {
+      await page.getByRole("button", { name: new RegExp(`^${layout}`) }).click();
+      for (const mode of ["Convergent", "Divergent"]) {
+        await page.getByRole("tab", { name: new RegExp(mode) }).click();
+        await page.waitForTimeout(300);
+        const result = await page.locator(".print-root").evaluate((root) => {
+          let smallest = Infinity;
+          let where = "";
+          root.querySelectorAll(".sheet *").forEach((el) => {
+            const hasText = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim());
+            if (!hasText || !(el as HTMLElement).getClientRects().length) return;
+            const px = parseFloat(getComputedStyle(el).fontSize);
+            if (px < smallest) {
+              smallest = px;
+              where = `${el.className || el.tagName}: ${el.textContent!.trim().slice(0, 30)}`;
+            }
+          });
+          const shrunk = [...root.querySelectorAll<HTMLElement>(".sheet")].some((s) => s.style.fontSize);
+          const fits = [...root.querySelectorAll<HTMLElement>(".sheet")].every((s) => s.scrollHeight <= s.clientHeight + 1);
+          return { pt: smallest * 0.75, where, shrunk, fits };
+        });
+        expect(result.pt, `${layout} ${mode}: smallest text is ${result.where}`).toBeGreaterThanOrEqual(10.99);
+        expect(result.shrunk).toBe(false);
+        expect(result.fits, `${layout} ${mode}: every printed sheet fits`).toBe(true);
+      }
+    }
+  });
+
+  test("convergent vocab keeps two words on page 1 and moves the third to page 2", async ({ page }) => {
+    await page.getByRole("button", { name: /^Doodle vocabulary/ }).click();
+    const notes = page.locator(".print-root .layout-vocab");
+    await expect(notes).toHaveCount(2);
+    await expect(notes.nth(0).locator(".vrow")).toHaveCount(2);
+    await expect(notes.nth(1).locator(".vrow")).toHaveCount(1);
+    await expect(notes.nth(1).locator(".contd")).toContainText("continued");
+    await expect(notes.nth(1).locator(".foot")).toContainText("page 2 of 2");
+  });
+});

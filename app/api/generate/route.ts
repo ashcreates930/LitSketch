@@ -51,7 +51,9 @@ export async function POST(req: Request) {
   if (words > MAX_WORDS) return fail(`The passage can be up to ${MAX_WORDS} words. Try a shorter section.`, 400);
 
   try {
-    const result = await generateResource({ grade, benchmark, title, titleHint, paragraphs });
+    // Automated tests send x-litsketch-demo so they never spend API credits (ignored in production).
+    const forceDemo = process.env.NODE_ENV !== "production" && req.headers.get("x-litsketch-demo") === "1";
+    const result = await generateResource({ grade, benchmark, title, titleHint, paragraphs, forceDemo });
     // One rule, decided here: V benchmarks always open on vocab (see pickLayout).
     return Response.json({ ...result, suggestedLayout: pickLayout(benchmark.code, result.content.text_type) });
   } catch (err) {

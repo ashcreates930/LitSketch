@@ -24,9 +24,10 @@ export async function generateResource(args: {
   benchmark: Benchmark;
   title: string;
   titleHint?: string;
+  forceDemo?: boolean;
   paragraphs: string[];
 }): Promise<GenerateResult> {
-  if (demoModeActive()) {
+  if (args.forceDemo || demoModeActive()) {
     return { content: DEMO_GENERATION, warnings: [], demo: true };
   }
   if (!process.env.OPENAI_API_KEY) {

@@ -62,7 +62,14 @@ async function shoot(sheet, name) {
     const root = el.closest(".print-root");
     root.style.position = "static";
     root.style.visibility = "visible";
-    return { over: el.scrollHeight - el.clientHeight, font: getComputedStyle(el).fontSize };
+    // Smallest printed text on the sheet, in points (11pt is the floor).
+    let min = Infinity;
+    el.querySelectorAll("*").forEach((n) => {
+      if ([...n.childNodes].some((c) => c.nodeType === 3 && c.textContent.trim()) && n.getClientRects().length) {
+        min = Math.min(min, parseFloat(getComputedStyle(n).fontSize));
+      }
+    });
+    return { over: el.scrollHeight - el.clientHeight, font: `smallest text ${(min * 0.75).toFixed(1)}pt` };
   });
   await sheet.screenshot({ path: `${out}/${name}.png` });
   await sheet.evaluate((el) => {
@@ -79,7 +86,9 @@ if (!passageOnly) {
     for (const mode of ["Convergent", "Divergent"]) {
       await page.getByRole("tab", { name: new RegExp(mode) }).click();
       await page.waitForTimeout(400);
-      await shoot(page.locator(".print-root .sheet").first(), `${slug}-${mode.toLowerCase()}`);
+      const notes = page.locator(".print-root .sheet:not(.layout-passage)");
+      const n = await notes.count();
+      for (let i = 0; i < n; i++) await shoot(notes.nth(i), `${slug}-${mode.toLowerCase()}${n > 1 ? `-page${i + 1}` : ""}`);
     }
   }
 }
