@@ -206,14 +206,22 @@ export function ResultsView({ headingRef, resource, onResourceChange, view, onVi
             of the writing, or the bottom will be cut off.
           </Msg>
         )}
-        <p className="msg msg-info edit-tip">
+        <p className="msg msg-info edit-tip" aria-live="polite">
           <span>
-            <strong>To change any words,</strong> tap the text on the page (it has a dotted outline) and type. Changes are
-            saved on this device and will print.
+            {view.editing ? (
+              <>
+                <strong>Teacher edit is on.</strong> Tap any outlined text and type. Changes are saved on this device and
+                will print. The outlines never print.
+              </>
+            ) : (
+              <>
+                <strong>To change any words,</strong> turn on <strong>Teacher edit</strong> in the toolbar.
+              </>
+            )}
           </span>
         </p>
         <div className={`ls-screen${view.colored ? " colored" : ""}${view.answers ? " answers" : ""}`}>
-          <LSProvider value={{ ...ctx, editable: true }}>
+          <LSProvider value={{ ...ctx, editable: view.editing }}>
             <Document withPassage={view.withPassage} />
           </LSProvider>
         </div>

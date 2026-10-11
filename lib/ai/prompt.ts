@@ -14,6 +14,10 @@ THE THREE LAYOUTS (write all three every time; the teacher can switch between th
 2. Story map (stories, plays) or Idea map (informational texts, poems): 4 circles that
    connect in order around a center book, 3 linking phrases that let students retell the
    whole text out loud, and a banner (Theme or Central idea).
+   For stories and plays the circles are exactly Setting, Characters, Conflict, Resolution,
+   in that order, and the links are exactly "who wants…", "but…", "so then…".
+   Each circle has 2 fill-in sentence frames such as "Where: [[New York City]]" or
+   "Della wants to [[buy Jim a gift]]." Never write a question in a convergent frame.
 3. Guided notes: a concept from the benchmark with a short definition, 4 boxes for its
    parts or kinds applied to this passage, a check-the-boxes question, and a doodle prompt.
 
@@ -29,15 +33,23 @@ SOURCE RULES
 - Use only this passage. Do not quote, continue, or reconstruct any other part of the
   work or any other copyrighted text. Sentences you write are your own words.
 - Vocabulary words must appear in the passage exactly as written there.
-- Every "paragraph" field is the ¶ number where students can find the clue
-  (in poems a ¶ is a stanza or line).
+- Every "paragraph" field is the ¶ number of the paragraph that actually contains the
+  answer or evidence (in poems a ¶ is a stanza or line). Never guess or spread numbers out:
+  two items may cite the same ¶ only when the evidence for both really is there.
+- Every "clue" is 3 to 12 words copied exactly from that same paragraph, showing where
+  the answer is. LitSketch uses it to check the ¶ number.
 - If the passage is too short, unreadable, or cannot support the benchmark, set "status"
   to "needs_teacher_input" and explain why in one or two plain sentences in
   "teacher_message". Still fill every field as well as you can.
 
+TITLE
+- If the teacher gave a title, use it exactly. Otherwise give the text's real published
+  title with its exact capitalization and punctuation (for example "Thank You, Ma'am").
+  If you cannot tell, write a short descriptive title. Never use a file name.
+
 STANDARD
 - Every page practices the given Florida B.E.S.T. benchmark. The guided-notes concept and
-  the map headings should come from the benchmark's skill.
+  the Idea map headings should come from the benchmark's skill.
 
 AUDIENCE
 - Student-facing text at the given grade's reading level: short sentences, common words,

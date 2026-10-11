@@ -90,6 +90,9 @@ export function Toolbar({ resource, view, sheetCount, printRef, onViewChange, on
       <div className="toolbar-row">
         <span className="name">{name}</span>
         <div className="actions">
+          <button type="button" className="btn" aria-pressed={view.editing} onClick={() => onViewChange({ editing: !view.editing })}>
+            Teacher edit
+          </button>
           <button type="button" className="btn" aria-pressed={view.colored} onClick={() => onViewChange({ colored: !view.colored })}>
             Preview colored
           </button>

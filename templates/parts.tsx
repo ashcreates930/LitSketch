@@ -31,7 +31,7 @@ export function Sheet({
   const { resource, mode } = useLS();
   const modeName = mode === "convergent" ? "Convergent" : "Divergent";
   return (
-    <article className={`sheet layout-${kind}`} aria-label={label}>
+    <article className={`sheet layout-${kind} mode-${mode}`} aria-label={label}>
       {before}
       <div className="namebar">
         <span>

@@ -7,9 +7,11 @@ export type View = {
   colored: boolean;
   answers: boolean;
   withPassage: boolean;
+  /** Teacher edit: text is editable and outlined only while this is on */
+  editing: boolean;
 };
 
-export const DEFAULT_VIEW: View = { layout: "guided", mode: "convergent", colored: false, answers: false, withPassage: true };
+export const DEFAULT_VIEW: View = { layout: "guided", mode: "convergent", colored: false, answers: false, withPassage: true, editing: false };
 
 /**
  * The teacher's work in progress, kept in this browser only so a refresh,

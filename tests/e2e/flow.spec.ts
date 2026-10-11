@@ -111,15 +111,32 @@ test.describe("finished notes", () => {
     await expect(page.locator(".print-root .layout-passage")).toHaveCount(0);
   });
 
-  test("teacher edits show up in the print copy", async ({ page }) => {
+  test("Teacher edit: off by default with no outlines; on, edits show in print, and outlines never print", async ({ page }) => {
+    const toggle = page.getByRole("button", { name: "Teacher edit" });
+    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator(".ls-screen [contenteditable]")).toHaveCount(0);
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
     const link = page.getByRole("textbox", { name: "Arrow phrase 1" });
     await link.click();
     await page.keyboard.press("ControlOrMeta+A");
-    await page.keyboard.type("who has to…");
+    await page.keyboard.type("who longs for…");
     await link.blur();
-    await expect(page.locator(".print-root .k1")).toHaveText("who has to…");
+    await expect(page.locator(".print-root .k1")).toHaveText("who longs for…");
+    await expect(page.locator(".print-root [contenteditable], .print-root .editable")).toHaveCount(0);
+    await expectAccessible(page);
+
     await page.reload();
-    await expect(page.getByRole("textbox", { name: "Arrow phrase 1" })).toHaveText("who has to…");
+    await expect(page.locator(".ls-screen .k1")).toHaveText("who longs for…");
+  });
+
+  test("story map runs Setting, Characters, Conflict, Resolution with the reference connectors", async ({ page }) => {
+    await expect(page.locator(".ls-screen .orb h2")).toHaveText(["Setting", "Characters", "Conflict", "Resolution"]);
+    await expect(page.locator(".ls-screen .link")).toHaveText(["who wants…", "but…", "so then…"]);
+    for (const orb of await page.locator(".print-root .orb").all()) {
+      await expect(orb.locator(".cue")).toContainText(/¶[1-6]./);
+    }
   });
 
   test("start over asks first", async ({ page }) => {

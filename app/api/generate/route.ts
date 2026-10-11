@@ -1,4 +1,4 @@
-import { GenerateRequestSchema } from "@/lib/ai/schema";
+import { GenerateRequestSchema, pickLayout } from "@/lib/ai/schema";
 import { GenerationError, generateResource } from "@/lib/ai/generate";
 import { findBenchmark } from "@/lib/standards";
 import { MAX_WORDS, MIN_WORDS, wordCount } from "@/lib/passage";
@@ -52,7 +52,8 @@ export async function POST(req: Request) {
 
   try {
     const result = await generateResource({ grade, benchmark, title, paragraphs });
-    return Response.json(result);
+    // One rule, decided here: V benchmarks always open on vocab (see pickLayout).
+    return Response.json({ ...result, suggestedLayout: pickLayout(benchmark.code, result.content.text_type) });
   } catch (err) {
     console.error("generate failed", err);
     if (err instanceof GenerationError) return fail(err.message, 503);

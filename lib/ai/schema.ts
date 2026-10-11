@@ -6,7 +6,10 @@ import { z } from "zod";
  * Every field is required (OpenAI strict structured outputs); counts are checked in verify.ts.
  */
 
-const Para = z.number().int().describe("The ¶ number in the passage where students can find this.");
+const Para = z.number().int().describe("The ¶ number of the paragraph that actually contains the answer or evidence.");
+const Clue = z
+  .string()
+  .describe("3 to 12 words copied exactly from that paragraph that show where the answer is. Used to check the ¶ number; not printed.");
 
 const Divergent = z.object({
   prompt: z.string().describe("Open prompt for the divergent version, 18 words or fewer, many good answers."),
@@ -45,7 +48,9 @@ const VocabWord = z.object({
 export const GenerationSchema = z.object({
   status: z.enum(["ok", "needs_teacher_input"]),
   teacher_message: z.string().describe("Empty when status is ok. Otherwise a plain-language reason for the teacher."),
-  title: z.string().describe("Title of the text, or a short descriptive title if none was given."),
+  title: z
+    .string()
+    .describe("The text's real published title with its exact capitalization and punctuation (e.g. \"Thank You, Ma'am\"). If you cannot tell, a short descriptive title. Never a file name."),
   author: z.string().describe("Author if the passage or title states it; otherwise empty."),
   text_type: z.enum(["narrative", "informational", "poetry", "drama"]),
   topic_label: z.string().describe("2 to 4 word label for the skill, shown next to the benchmark code, e.g. 'Story elements'."),
@@ -62,19 +67,22 @@ export const GenerationSchema = z.object({
     orbits: z
       .array(
         z.object({
-          heading: z.string().describe("One or two words, e.g. Setting, Characters, Conflict, Resolution, Key detail."),
+          heading: z
+            .string()
+            .describe("Stories and plays: exactly Setting, Characters, Conflict, Resolution, in that order. Otherwise one or two words."),
           icon_hint: z.string().describe("One word naming a simple icon idea, e.g. city, people, storm, heart, clue."),
           lines: z
             .array(z.string())
-            .describe("Exactly 2 short sentence frames, each with one [[answer]] blank, e.g. 'Where: [[New York City]]'."),
+            .describe("Exactly 2 short fill-in sentence frames, each with one [[answer]] blank, never a question. e.g. 'Where: [[New York City]]', 'Della wants to [[buy Jim a gift]].'"),
           paragraph: Para,
+          clue: Clue,
           divergent: Divergent,
         }),
       )
       .describe("Exactly 4 circles, in the order they connect around the map."),
     links: z
       .array(z.string())
-      .describe("Exactly 3 connecting phrases for the arrows between circles 1→2, 2→3, 3→4, e.g. 'who wants…', 'but…', 'so then…'."),
+      .describe("Exactly 3 connecting phrases for the arrows between circles 1→2, 2→3, 3→4. Stories and plays: exactly 'who wants…', 'but…', 'so then…'."),
     banner: z.object({
       heading: z.string().describe("e.g. Theme or Central idea"),
       starter: z.string().describe("Sentence starter students finish on a line, 16 words or fewer."),
@@ -94,6 +102,7 @@ export const GenerationSchema = z.object({
           icon_hint: z.string().describe("One word naming a simple icon idea."),
           text: z.string().describe("One or two sentences tied to this passage, with 2 [[answer]] blanks."),
           paragraph: Para,
+          clue: Clue,
           divergent: Divergent,
         }),
       )
@@ -102,6 +111,7 @@ export const GenerationSchema = z.object({
       prompt: z.string().describe("A question about the passage students answer by checking boxes."),
       choices: z.array(z.object({ text: z.string(), correct: z.boolean() })).describe("3 to 5 one- or two-word choices."),
       paragraph: Para,
+      clue: Clue,
       divergent: Divergent,
     }),
     doodle_prompt: z.string().describe("e.g. 'Doodle the moment the conflict is at its worst.' 14 words or fewer."),

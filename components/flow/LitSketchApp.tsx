@@ -11,7 +11,7 @@ import { loadAccessCode, saveAccessCode } from "@/lib/access-code-store";
 import { DEFAULT_VIEW, EMPTY_DRAFT, clearDraft, loadDraft, saveDraft, type Draft } from "@/lib/draft";
 import { splitParagraphs } from "@/lib/passage";
 import { findBenchmark } from "@/lib/standards";
-import { pickLayout, type Generation, type Resource } from "@/lib/ai/schema";
+import { pickLayout, type Generation, type LayoutKind, type Resource } from "@/lib/ai/schema";
 import { DEMO_BENCHMARK, DEMO_GRADE, DEMO_PASSAGE, DEMO_TITLE } from "@/lib/ai/demo";
 
 export function LitSketchApp() {
@@ -69,6 +69,7 @@ export function LitSketchApp() {
         warnings?: string[];
         demo?: boolean;
         field?: "accessCode";
+        suggestedLayout?: LayoutKind;
       };
       if (data.field === "accessCode") {
         setCodeAsked(true);
@@ -84,7 +85,7 @@ export function LitSketchApp() {
         benchmark: { code: bm.code, topic: bm.topic, text: bm.text },
         passage: { title: draft.title, paragraphs },
         content: { ...data.content, title: draft.title.trim() || data.content.title },
-        suggestedLayout: pickLayout(bm.code, data.content.text_type),
+        suggestedLayout: data.suggestedLayout ?? pickLayout(bm.code, data.content.text_type),
         warnings: data.warnings ?? [],
         demo: !!data.demo,
       };

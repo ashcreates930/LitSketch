@@ -5,7 +5,7 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
 import type { Benchmark } from "@/lib/standards";
 import { GenerationSchema, type Generation } from "./schema";
 import { SYSTEM_PROMPT, buildRepairMessage, buildUserMessage } from "./prompt";
-import { verifyGeneration } from "./verify";
+import { fixCitations, normalizeStoryMap, verifyGeneration } from "./verify";
 import { DEMO_GENERATION } from "./demo";
 
 export const DEFAULT_MODEL = "gpt-5.4-mini";
@@ -54,11 +54,13 @@ export async function generateResource(args: {
     });
     const parsed = response.output_parsed;
     if (!parsed) throw new GenerationError("The writing service sent back an empty answer.");
-    content = parsed;
-    issues = verifyGeneration(parsed, args.paragraphs);
+    // Put story circles in order, then point every ¶ cue at the paragraph that really holds the evidence.
+    const fixed = fixCitations(normalizeStoryMap(parsed), args.paragraphs);
+    content = fixed.content;
+    issues = [...verifyGeneration(content, args.paragraphs), ...fixed.missing];
     if (issues.length === 0 || parsed.status !== "ok") break;
     input.push(
-      { role: "assistant", content: JSON.stringify(parsed) },
+      { role: "assistant", content: JSON.stringify(content) },
       { role: "user", content: buildRepairMessage(issues.map((i) => i.repair)) },
     );
   }

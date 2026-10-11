@@ -40,7 +40,8 @@ export function StepPassage({ headingRef, title, text, agreed, onChange, onNext,
         extracted = data.text;
       }
       if (!extracted) throw new Error("That file has no text in it. Please paste the passage instead.");
-      onChange({ text: extracted, title: title || file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ") });
+      // The title comes from the teacher or the AI, never from the file name.
+      onChange({ text: extracted });
       setTextError("");
       setUpload({ kind: "success", text: `Added the text from "${file.name}". Check it below; you can change anything.` });
     } catch (err) {

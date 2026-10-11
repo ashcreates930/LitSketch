@@ -141,7 +141,7 @@
 .layout-map .orb svg { width: 3em; height: 2.4em; flex: none; }
 .layout-map .orb h2 { font-size: 1.55em; margin: 0.15em 0 0.35em; }
 .layout-map .orb .say { font-size: 0.9em; line-height: 1.75; }
-.layout-map .orb .lines { width: 100%; --n: 1; }
+.layout-map .orb .lines { width: 100%; }
 .layout-map .orb .cue { font-size: 0.8em; margin: -0.2em 0 0.2em; }
 .layout-map .orb .blank { min-width: min(var(--w, 6em), 5.5em); }
 .colored .layout-map .o1 { background: color-mix(in srgb, var(--c2) 45%, white); }
@@ -260,7 +260,7 @@
 .ls-print .layout-vocab .vrow { grid-template-columns: 1.05fr 1fr; padding: 0.55em 0; break-inside: avoid; }
 
 .ls-print .layout-map .title { margin-top: 0.2em; }
-.ls-print .layout-map .map { width: 74%; margin: 0 auto; }
+.ls-print .layout-map .map { width: 86%; margin: 0 auto; }
 .ls-print .layout-map .how { margin-bottom: 0.4em; }
 .ls-print .layout-map .theme { width: 80%; margin: 0.4em auto 0; }
 
@@ -268,3 +268,5 @@
 .ls-print .layout-guided .namebar { padding-right: 5.5em; }
 .ls-print .layout-guided .types { grid-template-columns: 1fr 1fr; }
 .ls-print .layout-guided .apply { grid-template-columns: 1.15fr 1fr; flex: 1; max-height: 5.2in; }
+.ls-print .layout-map.mode-divergent .map { width: 76%; }
+.ls-print .layout-map.mode-divergent .theme { width: 74%; margin-top: 0.2em; }

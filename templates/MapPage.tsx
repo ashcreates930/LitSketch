@@ -56,12 +56,12 @@ export function MapPage() {
                         <Cloze path={[...P, "lines", j]} label={`Circle ${i + 1}, line ${j + 1}`} />
                       </p>
                     ))}
-                    <Lines n={1} />
+                    <Lines n={2} />
                   </>
                 ) : (
                   <>
                     <Field as="p" className="say" path={[...P, "divergent", "prompt"]} label={`Circle ${i + 1} open question`} />
-                    <Lines n={1} />
+                    <Lines n={3} />
                     <LookFor path={[...P, "divergent", "look_for"]} />
                   </>
                 )}
