@@ -1,0 +1,602 @@
+/*
+ * LitSketch doodle-note pages.
+ * Shared by the on-screen editor (.ls-screen), browser printing, and server PDFs (.ls-print).
+ * Sizes inside a page are in em, so the page scales with the reader's text size on screen
+ * and is a fixed 11pt on paper.
+ * "Wide" layouts apply to every printed page and to screen pages with room for them.
+ */
+
+@page {
+  size: letter;
+  margin: 0.5in;
+}
+
+.ls-page {
+  --ls-ink: #111;
+  --ls-paper: #fff;
+  --ls-soft: #4a4a4a;
+  font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ls-ink);
+  background: var(--ls-paper);
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.ls-page *,
+.ls-page *::before,
+.ls-page *::after {
+  box-sizing: border-box;
+}
+.ls-page :is(p, h2, h3, ul, ol, dl, dd, figure, table) {
+  margin: 0;
+  padding: 0;
+}
+.ls-page :is(ul, ol) {
+  list-style: none;
+}
+.ls-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Header and footer (every page) ---------- */
+.ls-head {
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 0.45em;
+  margin-bottom: 0.7em;
+}
+.ls-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+.ls-tag {
+  font-size: 0.8em;
+}
+.ls-tag-mode {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  padding: 0.05em 0.6em;
+  margin-right: 0.3em;
+}
+.ls-code {
+  font-weight: 700;
+  font-size: 0.95em;
+  border: 2px solid currentColor;
+  padding: 0.05em 0.5em;
+  border-radius: 0.3em;
+  white-space: nowrap;
+}
+.ls-title {
+  font-size: 1.5em;
+  line-height: 1.15;
+  margin-top: 0.3em;
+  font-weight: 700;
+}
+.ls-title-suffix {
+  font-weight: 400;
+}
+.ls-goal {
+  font-size: 0.9em;
+  margin-top: 0.25em;
+}
+.ls-name-row {
+  display: flex;
+  gap: 0.4em;
+  align-items: flex-end;
+  margin-top: 0.5em;
+  font-size: 0.85em;
+}
+.ls-fill {
+  flex: 1;
+  border-bottom: 1.5px solid currentColor;
+  min-width: 2.5em;
+  height: 1.1em;
+}
+.ls-fill-name {
+  flex: 3;
+}
+.ls-fill-short {
+  flex: 0.6;
+}
+.ls-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  min-height: 0;
+}
+.ls-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  font-size: 0.72em;
+  border-top: 1px solid currentColor;
+  padding-top: 0.3em;
+  margin-top: 0.6em;
+}
+
+/* ---------- Shared pieces ---------- */
+.ls-h {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 1.08em;
+  font-weight: 700;
+  margin-bottom: 0.35em;
+}
+.ls-icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+}
+.ls-label {
+  font-size: 0.85em;
+  font-weight: 700;
+}
+.ls-para {
+  font-size: 0.75em;
+  font-weight: 400;
+  border: 1px solid currentColor;
+  border-radius: 0.3em;
+  padding: 0 0.3em;
+  white-space: nowrap;
+}
+.ls-frame {
+  position: relative;
+  padding: 0.65em 0.8em;
+}
+.ls-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--ls-ink);
+}
+.ls-frame-inner {
+  position: relative;
+}
+.ls-frame-ellipse {
+  padding: 1.2em 1.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.ls-frame-cloud {
+  text-align: center;
+}
+.ls-lines {
+  display: block;
+}
+.ls-line {
+  display: block;
+  height: 1.7em;
+  border-bottom: 1.2px solid var(--ls-soft);
+}
+.ls-blank {
+  display: inline-block;
+  min-width: 4em;
+  border-bottom: 1.5px solid currentColor;
+  height: 1em;
+}
+.ls-blank-wide {
+  min-width: 6em;
+}
+.ls-arrow {
+  width: 2em;
+  height: 1.2em;
+  flex: none;
+  color: var(--ls-ink);
+}
+.ls-grid-2,
+.ls-grid-3,
+.ls-row-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6em;
+}
+.ls-mini-sketch {
+  flex: none;
+  width: 5.5em;
+  min-height: 4.6em;
+  border: 1.5px dashed currentColor;
+  border-radius: 0.4em;
+  font-size: 0.75em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+  padding: 0.3em;
+  color: var(--ls-soft);
+}
+
+/* ---------- Convergent: Structured Frames ---------- */
+.ls-bigq-text {
+  font-size: 1.1em;
+  font-weight: 700;
+}
+.ls-word {
+  font-weight: 700;
+  font-size: 1.05em;
+  margin-bottom: 0.2em;
+}
+.ls-vocab-cols {
+  display: flex;
+  gap: 0.6em;
+  align-items: stretch;
+}
+.ls-vocab-write {
+  flex: 1;
+  min-width: 0;
+}
+.ls-seq {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.ls-seq-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ls-seq-box {
+  width: 100%;
+  padding-left: 2.5em;
+}
+.ls-num {
+  position: absolute;
+  left: -2em;
+  top: -0.1em;
+  width: 1.6em;
+  height: 1.6em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9em;
+}
+.ls-starter {
+  font-weight: 700;
+  font-size: 0.95em;
+}
+.ls-seq .ls-arrow {
+  transform: rotate(90deg);
+  margin: 0.15em 0;
+}
+.ls-evidence {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.92em;
+}
+.ls-evidence :is(th, td) {
+  border: 1.5px solid currentColor;
+  padding: 0.3em 0.45em;
+  vertical-align: top;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.ls-evidence th {
+  font-weight: 700;
+}
+.ls-cue {
+  display: inline-flex;
+  gap: 0.25em;
+  align-items: center;
+  font-size: 0.85em;
+  font-style: italic;
+}
+.ls-cloze-cols {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+.ls-cloze {
+  flex: 1;
+  line-height: 1.95;
+}
+.ls-bank {
+  border: 2px solid currentColor;
+  border-radius: 0.4em;
+  padding: 0.35em 0.6em;
+  align-self: flex-start;
+  min-width: 8em;
+}
+.ls-bank-title {
+  font-weight: 700;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.ls-bank ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1em 0.9em;
+}
+.ls-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  counter-reset: q;
+}
+.ls-checks li {
+  counter-increment: q;
+  position: relative;
+  padding-left: 1.5em;
+}
+.ls-checks li::before {
+  content: counter(q) ".";
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+}
+.ls-sumup .ls-frame-inner {
+  display: flex;
+  gap: 0.8em;
+}
+.ls-sumup-write {
+  flex: 1;
+  min-width: 0;
+}
+.ls-sumup-sketch {
+  width: 8em;
+}
+
+/* ---------- Divergent: Idea Web ---------- */
+.ls-web {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+.ls-web-lines {
+  display: none;
+}
+.ls-web-center {
+  min-height: 6em;
+}
+.ls-web-center-text {
+  font-weight: 700;
+  font-size: 1.05em;
+}
+.ls-web-branches {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6em;
+}
+.ls-web-b {
+  min-height: 5.5em;
+  font-size: 0.92em;
+}
+.ls-sketch-big {
+  flex: 1;
+  min-height: 10em;
+}
+.ls-cloud {
+  min-height: 10.5em;
+  padding: 2.9em 2.4em 2.6em;
+}
+.ls-cloud p {
+  font-weight: 700;
+  font-size: 0.9em;
+}
+.ls-connect {
+  flex: none;
+}
+.ls-row-2 {
+  flex: 1;
+}
+.ls-showit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+}
+.ls-choices li {
+  padding: 0.35em 0.2em;
+  font-size: 0.82em;
+}
+.ls-choices .ls-frame-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+  text-align: center;
+}
+.ls-showit-space {
+  flex: 1;
+  min-height: 7em;
+}
+
+/* ---------- Answer key ---------- */
+.ls-key-note {
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
+  font-weight: 700;
+  border: 2px solid currentColor;
+  border-radius: 0.4em;
+  padding: 0.35em 0.6em;
+  font-size: 0.88em;
+}
+.ls-key-sec .ls-h {
+  font-size: 1em;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.1em;
+  margin-bottom: 0.25em;
+}
+.ls-key-dl {
+  font-size: 0.92em;
+}
+.ls-key-dl > div {
+  display: grid;
+  grid-template-columns: 8em 1fr;
+  gap: 0.5em;
+  padding: 0.1em 0;
+}
+.ls-key-dl dt {
+  font-weight: 700;
+}
+.ls-page .ls-key-ol {
+  list-style: decimal;
+  padding-left: 1.4em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  font-size: 0.92em;
+}
+.ls-key-q {
+  font-weight: 700;
+}
+.ls-quote {
+  font-style: italic;
+}
+.ls-key-grid {
+  display: grid;
+  gap: 0.55em;
+  grid-template-columns: 1fr;
+}
+.ls-key-card {
+  border: 1.5px solid currentColor;
+  border-radius: 0.4em;
+  padding: 0.4em 0.6em;
+  font-size: 0.88em;
+}
+.ls-page .ls-key-ul {
+  list-style: disc;
+  padding-left: 1.2em;
+}
+.ls-sample {
+  margin-top: 0.25em;
+}
+
+/* ---------- Passage ---------- */
+.ls-passage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+  line-height: 1.5;
+}
+.ls-passage-p {
+  display: grid;
+  grid-template-columns: 2.4em 1fr;
+  gap: 0.4em;
+}
+.ls-pnum {
+  font-weight: 700;
+  font-size: 0.85em;
+  padding-top: 0.12em;
+}
+.ls-ptext {
+  white-space: pre-line;
+}
+
+/* ---------- Wide layouts: all printed pages, and roomy screens ---------- */
+:is(.ls-print, .ls-screen.is-wide) .ls-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-row-2,
+:is(.ls-print, .ls-screen.is-wide) .ls-key-grid {
+  grid-template-columns: 1fr 1fr;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-seq {
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 0.6em;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-seq-item {
+  flex-direction: row;
+  align-items: stretch;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-seq .ls-arrow {
+  transform: none;
+  align-self: center;
+  width: 1.5em;
+  margin: 0 0.1em;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-seq-item:nth-child(3n) .ls-arrow,
+:is(.ls-print, .ls-screen.is-wide) .ls-seq-item:last-child .ls-arrow {
+  visibility: hidden;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-cloze-cols {
+  flex-direction: row;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-bank ul {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-web {
+  display: block;
+  height: 25em;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-web-lines {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--ls-ink);
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-web-center {
+  position: absolute;
+  left: 33%;
+  top: 31%;
+  width: 34%;
+  height: 38%;
+  background: var(--ls-paper);
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-web-branches {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-web-b {
+  position: absolute;
+  width: 29%;
+  height: 29%;
+  background: var(--ls-paper);
+}
+:is(.ls-print, .ls-screen.is-wide) .ls-web-b1 { left: 0; top: 0; }
+:is(.ls-print, .ls-screen.is-wide) .ls-web-b2 { left: 0; top: 35.5%; }
+:is(.ls-print, .ls-screen.is-wide) .ls-web-b3 { left: 0; bottom: 0; }
+:is(.ls-print, .ls-screen.is-wide) .ls-web-b4 { right: 0; top: 0; }
+:is(.ls-print, .ls-screen.is-wide) .ls-web-b5 { right: 0; top: 35.5%; }
+:is(.ls-print, .ls-screen.is-wide) .ls-web-b6 { right: 0; bottom: 0; }
+
+/* ---------- Paper geometry: print, PDF, and the hidden measuring copy ---------- */
+.ls-print .ls-page {
+  --ls-ink: #000;
+  --ls-paper: #fff;
+  --ls-soft: #333;
+  width: 7.5in;
+  height: 9.9in;
+  overflow: hidden;
+  font-size: 11pt;
+  break-after: page;
+  page-break-after: always;
+}
+.ls-print .ls-page:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+.ls-print .ls-body {
+  overflow: hidden;
+}

@@ -1,0 +1,635 @@
+{
+ "source": "Florida B.E.S.T. ELA Standards (FLDOE), Reading and Vocabulary strands, grades 6-12. Text retrieved 2026-10-11 from the Achievement Standards Network listing at commonplanner.com; spot-check against the official FLDOE document.",
+ "benchmarks": [
+  {
+   "code": "ELA.6.R.1.1",
+   "grade": 6,
+   "topic": "Literary elements",
+   "text": "Analyze how the interaction between characters contributes to the development of a plot in a literary text."
+  },
+  {
+   "code": "ELA.6.R.1.2",
+   "grade": 6,
+   "topic": "Theme",
+   "text": "Analyze the development of stated or implied theme(s) throughout a literary text."
+  },
+  {
+   "code": "ELA.6.R.1.3",
+   "grade": 6,
+   "topic": "Perspective and point of view",
+   "text": "Explain the influence of multiple narrators and/or shifts in point of view in a literary text."
+  },
+  {
+   "code": "ELA.6.R.1.4",
+   "grade": 6,
+   "topic": "Poetry",
+   "text": "Describe the impact of various poetic forms on meaning and style."
+  },
+  {
+   "code": "ELA.6.R.2.1",
+   "grade": 6,
+   "topic": "Text structure",
+   "text": "Explain how individual text sections and/or features convey meaning in texts."
+  },
+  {
+   "code": "ELA.6.R.2.2",
+   "grade": 6,
+   "topic": "Central idea",
+   "text": "Analyze the central idea(s), implied or explicit, and its development throughout a text."
+  },
+  {
+   "code": "ELA.6.R.2.3",
+   "grade": 6,
+   "topic": "Purpose and perspective",
+   "text": "Analyze authors' purpose(s) in multiple accounts of the same event or topic."
+  },
+  {
+   "code": "ELA.6.R.2.4",
+   "grade": 6,
+   "topic": "Argument",
+   "text": "Track the development of an argument, identifying the types of reasoning used."
+  },
+  {
+   "code": "ELA.6.R.3.1",
+   "grade": 6,
+   "topic": "Figurative language",
+   "text": "Explain how figurative language contributes to tone and meaning in text(s)."
+  },
+  {
+   "code": "ELA.6.R.3.2",
+   "grade": 6,
+   "topic": "Paraphrase and summarize",
+   "text": "Paraphrase content from grade-level texts."
+  },
+  {
+   "code": "ELA.6.R.3.3",
+   "grade": 6,
+   "topic": "Comparing texts",
+   "text": "Compare and contrast how authors from different time periods address the same or related topics."
+  },
+  {
+   "code": "ELA.6.R.3.4",
+   "grade": 6,
+   "topic": "Rhetoric",
+   "text": "Identify rhetorical appeals in a text."
+  },
+  {
+   "code": "ELA.6.V.1.1",
+   "grade": 6,
+   "topic": "Academic vocabulary",
+   "text": "Integrate academic vocabulary appropriate to grade level in speaking and writing."
+  },
+  {
+   "code": "ELA.6.V.1.2",
+   "grade": 6,
+   "topic": "Word parts and origins",
+   "text": "Apply knowledge of Greek and Latin roots and affixes to determine meanings of words and phrases in grade-level content."
+  },
+  {
+   "code": "ELA.6.V.1.3",
+   "grade": 6,
+   "topic": "Context clues and word meaning",
+   "text": "Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases, appropriate to grade level."
+  },
+  {
+   "code": "ELA.7.R.1.1",
+   "grade": 7,
+   "topic": "Literary elements",
+   "text": "Analyze the impact of setting on character development and plot in a literary text."
+  },
+  {
+   "code": "ELA.7.R.1.2",
+   "grade": 7,
+   "topic": "Theme",
+   "text": "Compare two or more themes and their development throughout a literary text."
+  },
+  {
+   "code": "ELA.7.R.1.3",
+   "grade": 7,
+   "topic": "Perspective and point of view",
+   "text": "Explain the influence of narrator(s), including unreliable narrator(s), and/or shifts in point of view in a literary text."
+  },
+  {
+   "code": "ELA.7.R.1.4",
+   "grade": 7,
+   "topic": "Poetry",
+   "text": "Analyze the impact of various poetic forms on meaning and style."
+  },
+  {
+   "code": "ELA.7.R.2.1",
+   "grade": 7,
+   "topic": "Text structure",
+   "text": "Explain how individual text sections and/or features convey a purpose in texts."
+  },
+  {
+   "code": "ELA.7.R.2.2",
+   "grade": 7,
+   "topic": "Central idea",
+   "text": "Compare two or more central ideas and their development throughout a text."
+  },
+  {
+   "code": "ELA.7.R.2.3",
+   "grade": 7,
+   "topic": "Purpose and perspective",
+   "text": "Explain how an author establishes and achieves purpose(s) through diction and syntax."
+  },
+  {
+   "code": "ELA.7.R.2.4",
+   "grade": 7,
+   "topic": "Argument",
+   "text": "Track the development of an argument, analyzing the types of reasoning used and their effectiveness."
+  },
+  {
+   "code": "ELA.7.R.3.1",
+   "grade": 7,
+   "topic": "Figurative language",
+   "text": "Analyze how figurative language contributes to tone and meaning and explain examples of allusions in text(s)."
+  },
+  {
+   "code": "ELA.7.R.3.2",
+   "grade": 7,
+   "topic": "Paraphrase and summarize",
+   "text": "Paraphrase content from grade-level texts."
+  },
+  {
+   "code": "ELA.7.R.3.3",
+   "grade": 7,
+   "topic": "Comparing texts",
+   "text": "Compare and contrast how authors with differing perspectives address the same or related topics or themes."
+  },
+  {
+   "code": "ELA.7.R.3.4",
+   "grade": 7,
+   "topic": "Rhetoric",
+   "text": "Explain the meaning and/or significance of rhetorical devices in a text."
+  },
+  {
+   "code": "ELA.7.V.1.1",
+   "grade": 7,
+   "topic": "Academic vocabulary",
+   "text": "Integrate academic vocabulary appropriate to grade level in speaking and writing."
+  },
+  {
+   "code": "ELA.7.V.1.2",
+   "grade": 7,
+   "topic": "Word parts and origins",
+   "text": "Apply knowledge of Greek and Latin roots and affixes to determine meanings of words and phrases in grade-level content."
+  },
+  {
+   "code": "ELA.7.V.1.3",
+   "grade": 7,
+   "topic": "Context clues and word meaning",
+   "text": "Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases, appropriate to grade level."
+  },
+  {
+   "code": "ELA.8.R.1.1",
+   "grade": 8,
+   "topic": "Literary elements",
+   "text": "Analyze the interaction between character development, setting, and plot in a literary text."
+  },
+  {
+   "code": "ELA.8.R.1.2",
+   "grade": 8,
+   "topic": "Theme",
+   "text": "Analyze two or more themes and their development throughout a literary text."
+  },
+  {
+   "code": "ELA.8.R.1.3",
+   "grade": 8,
+   "topic": "Perspective and point of view",
+   "text": "Analyze how an author develops and individualizes the perspectives of different characters."
+  },
+  {
+   "code": "ELA.8.R.1.4",
+   "grade": 8,
+   "topic": "Poetry",
+   "text": "Analyze structure, sound, imagery, and figurative language in poetry."
+  },
+  {
+   "code": "ELA.8.R.2.1",
+   "grade": 8,
+   "topic": "Text structure",
+   "text": "Analyze how individual text sections and/or features convey a purpose and/or meaning in texts."
+  },
+  {
+   "code": "ELA.8.R.2.2",
+   "grade": 8,
+   "topic": "Central idea",
+   "text": "Analyze two or more central ideas and their development throughout a text."
+  },
+  {
+   "code": "ELA.8.R.2.3",
+   "grade": 8,
+   "topic": "Purpose and perspective",
+   "text": "Explain how an author establishes and achieves purpose(s) through rhetorical appeals and/or figurative language."
+  },
+  {
+   "code": "ELA.8.R.2.4",
+   "grade": 8,
+   "topic": "Argument",
+   "text": "Track the development of an argument, analyzing the types of reasoning used and their effectiveness, identifying ways in which the argument could be improved."
+  },
+  {
+   "code": "ELA.8.R.3.1",
+   "grade": 8,
+   "topic": "Figurative language",
+   "text": "Analyze how figurative language contributes to meaning and explain examples of symbolism in text(s)."
+  },
+  {
+   "code": "ELA.8.R.3.2",
+   "grade": 8,
+   "topic": "Paraphrase and summarize",
+   "text": "Paraphrase content from grade-level texts."
+  },
+  {
+   "code": "ELA.8.R.3.3",
+   "grade": 8,
+   "topic": "Comparing texts",
+   "text": "Compare and contrast the use or discussion of archetypes in texts."
+  },
+  {
+   "code": "ELA.8.R.3.4",
+   "grade": 8,
+   "topic": "Rhetoric",
+   "text": "Explain how an author uses rhetorical devices to support or advance an appeal."
+  },
+  {
+   "code": "ELA.8.V.1.1",
+   "grade": 8,
+   "topic": "Academic vocabulary",
+   "text": "Integrate academic vocabulary appropriate to grade level in speaking and writing."
+  },
+  {
+   "code": "ELA.8.V.1.2",
+   "grade": 8,
+   "topic": "Word parts and origins",
+   "text": "Apply knowledge of Greek and Latin roots and affixes to determine meanings of words and phrases in grade-level content."
+  },
+  {
+   "code": "ELA.8.V.1.3",
+   "grade": 8,
+   "topic": "Context clues and word meaning",
+   "text": "Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases, appropriate to grade level."
+  },
+  {
+   "code": "ELA.9.R.1.1",
+   "grade": 9,
+   "topic": "Literary elements",
+   "text": "Explain how key elements enhance or add layers of meaning and/or style in a literary text."
+  },
+  {
+   "code": "ELA.9.R.1.2",
+   "grade": 9,
+   "topic": "Theme",
+   "text": "Analyze universal themes and their development throughout a literary text."
+  },
+  {
+   "code": "ELA.9.R.1.3",
+   "grade": 9,
+   "topic": "Perspective and point of view",
+   "text": "Analyze the influence of narrator perspective on a text, explaining how the author creates irony or satire."
+  },
+  {
+   "code": "ELA.9.R.1.4",
+   "grade": 9,
+   "topic": "Poetry",
+   "text": "Analyze the characters, structures, and themes of epic poetry."
+  },
+  {
+   "code": "ELA.9.R.2.1",
+   "grade": 9,
+   "topic": "Text structure",
+   "text": "Analyze how multiple text structures and/or features convey a purpose and/or meaning in texts."
+  },
+  {
+   "code": "ELA.9.R.2.2",
+   "grade": 9,
+   "topic": "Central idea",
+   "text": "Evaluate the support an author uses to develop the central idea(s) throughout a text."
+  },
+  {
+   "code": "ELA.9.R.2.3",
+   "grade": 9,
+   "topic": "Purpose and perspective",
+   "text": "Analyze how an author establishes and achieves purpose(s) through rhetorical appeals and/or figurative language."
+  },
+  {
+   "code": "ELA.9.R.2.4",
+   "grade": 9,
+   "topic": "Argument",
+   "text": "Compare the development of two opposing arguments on the same topic, evaluating the effectiveness and validity of the claims."
+  },
+  {
+   "code": "ELA.9.R.3.1",
+   "grade": 9,
+   "topic": "Figurative language",
+   "text": "Explain how figurative language creates mood in text(s)."
+  },
+  {
+   "code": "ELA.9.R.3.2",
+   "grade": 9,
+   "topic": "Paraphrase and summarize",
+   "text": "Paraphrase content from grade-level texts."
+  },
+  {
+   "code": "ELA.9.R.3.3",
+   "grade": 9,
+   "topic": "Comparing texts",
+   "text": "Compare and contrast the ways in which authors have adapted mythical, classical, or religious literary texts."
+  },
+  {
+   "code": "ELA.9.R.3.4",
+   "grade": 9,
+   "topic": "Rhetoric",
+   "text": "Explain an author's use of rhetoric in a text."
+  },
+  {
+   "code": "ELA.9.V.1.1",
+   "grade": 9,
+   "topic": "Academic vocabulary",
+   "text": "Integrate academic vocabulary appropriate to grade level in speaking and writing."
+  },
+  {
+   "code": "ELA.9.V.1.2",
+   "grade": 9,
+   "topic": "Word parts and origins",
+   "text": "Apply knowledge of etymology and derivations to determine meanings of words and phrases in grade-level content."
+  },
+  {
+   "code": "ELA.9.V.1.3",
+   "grade": 9,
+   "topic": "Context clues and word meaning",
+   "text": "Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases, appropriate to grade level."
+  },
+  {
+   "code": "ELA.10.R.1.1",
+   "grade": 10,
+   "topic": "Literary elements",
+   "text": "Analyze how key elements enhance or add layers of meaning and/or style in a literary text."
+  },
+  {
+   "code": "ELA.10.R.1.2",
+   "grade": 10,
+   "topic": "Theme",
+   "text": "Analyze and compare universal themes and their development throughout a literary text."
+  },
+  {
+   "code": "ELA.10.R.1.3",
+   "grade": 10,
+   "topic": "Perspective and point of view",
+   "text": "Analyze coming of age experiences reflected in a text and how the author represents conflicting perspectives."
+  },
+  {
+   "code": "ELA.10.R.1.4",
+   "grade": 10,
+   "topic": "Poetry",
+   "text": "Analyze how authors create multiple layers of meaning and/or ambiguity in a poem."
+  },
+  {
+   "code": "ELA.10.R.2.1",
+   "grade": 10,
+   "topic": "Text structure",
+   "text": "Analyze the impact of multiple text structures and the use of features in text(s)."
+  },
+  {
+   "code": "ELA.10.R.2.2",
+   "grade": 10,
+   "topic": "Central idea",
+   "text": "Analyze the central idea(s) of historical American speeches and essays."
+  },
+  {
+   "code": "ELA.10.R.2.3",
+   "grade": 10,
+   "topic": "Purpose and perspective",
+   "text": "Analyze an author's choices in establishing and achieving purpose(s) in historical American speeches and essays."
+  },
+  {
+   "code": "ELA.10.R.2.4",
+   "grade": 10,
+   "topic": "Argument",
+   "text": "Compare the development of two opposing arguments on the same topic, evaluating the effectiveness and validity of the claims, and analyzing the ways in which the authors use the same information to achieve different ends."
+  },
+  {
+   "code": "ELA.10.R.3.1",
+   "grade": 10,
+   "topic": "Figurative language",
+   "text": "Analyze how figurative language creates mood in text(s)."
+  },
+  {
+   "code": "ELA.10.R.3.2",
+   "grade": 10,
+   "topic": "Paraphrase and summarize",
+   "text": "Paraphrase content from grade-level texts."
+  },
+  {
+   "code": "ELA.10.R.3.3",
+   "grade": 10,
+   "topic": "Comparing texts",
+   "text": "Analyze how mythical, classical, or religious texts have been adapted."
+  },
+  {
+   "code": "ELA.10.R.3.4",
+   "grade": 10,
+   "topic": "Rhetoric",
+   "text": "Analyze an author's use of rhetoric in a text."
+  },
+  {
+   "code": "ELA.10.V.1.1",
+   "grade": 10,
+   "topic": "Academic vocabulary",
+   "text": "Integrate academic vocabulary appropriate to grade level in speaking and writing."
+  },
+  {
+   "code": "ELA.10.V.1.2",
+   "grade": 10,
+   "topic": "Word parts and origins",
+   "text": "Apply knowledge of etymology and derivations to determine meanings of words and phrases in grade-level content."
+  },
+  {
+   "code": "ELA.10.V.1.3",
+   "grade": 10,
+   "topic": "Context clues and word meaning",
+   "text": "Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases, appropriate to grade level."
+  },
+  {
+   "code": "ELA.11.R.1.1",
+   "grade": 11,
+   "topic": "Literary elements",
+   "text": "Evaluate how key elements enhance or add layers of meaning and/or style in a literary text."
+  },
+  {
+   "code": "ELA.11.R.1.2",
+   "grade": 11,
+   "topic": "Theme",
+   "text": "Track and analyze universal themes in literary texts from different times and places."
+  },
+  {
+   "code": "ELA.11.R.1.3",
+   "grade": 11,
+   "topic": "Perspective and point of view",
+   "text": "Analyze the author's choices in using juxtaposition to define character perspective."
+  },
+  {
+   "code": "ELA.11.R.1.4",
+   "grade": 11,
+   "topic": "Poetry",
+   "text": "Analyze ways in which poetry reflects themes and issues of its time period."
+  },
+  {
+   "code": "ELA.11.R.2.1",
+   "grade": 11,
+   "topic": "Text structure",
+   "text": "Evaluate the structure(s) and features in texts."
+  },
+  {
+   "code": "ELA.11.R.2.2",
+   "grade": 11,
+   "topic": "Central idea",
+   "text": "Analyze the central idea(s) of speeches and essays from the Classical Period."
+  },
+  {
+   "code": "ELA.11.R.2.3",
+   "grade": 11,
+   "topic": "Purpose and perspective",
+   "text": "Analyze an author's choices in establishing and achieving purpose(s) in speeches and essays from the Classical Period."
+  },
+  {
+   "code": "ELA.11.R.2.4",
+   "grade": 11,
+   "topic": "Argument",
+   "text": "Compare the development of multiple arguments on the same topic, evaluating the effectiveness and validity of the claims, the authors' reasoning, and the ways in which the authors use the same information to achieve different ends."
+  },
+  {
+   "code": "ELA.11.R.3.1",
+   "grade": 11,
+   "topic": "Figurative language",
+   "text": "Analyze the author's use of figurative language and explain examples of allegory."
+  },
+  {
+   "code": "ELA.11.R.3.2",
+   "grade": 11,
+   "topic": "Paraphrase and summarize",
+   "text": "Paraphrase content from grade-level texts."
+  },
+  {
+   "code": "ELA.11.R.3.3",
+   "grade": 11,
+   "topic": "Comparing texts",
+   "text": "Compare and contrast how contemporaneous authors address related topics, comparing the authors' use of reasoning, and analyzing the texts within the context of the time period."
+  },
+  {
+   "code": "ELA.11.R.3.4",
+   "grade": 11,
+   "topic": "Rhetoric",
+   "text": "Evaluate an author's use of rhetoric in text."
+  },
+  {
+   "code": "ELA.11.V.1.1",
+   "grade": 11,
+   "topic": "Academic vocabulary",
+   "text": "Integrate academic vocabulary appropriate to grade level in speaking and writing."
+  },
+  {
+   "code": "ELA.11.V.1.2",
+   "grade": 11,
+   "topic": "Word parts and origins",
+   "text": "Apply knowledge of etymology and derivations to determine meanings of words and phrases in grade-level content."
+  },
+  {
+   "code": "ELA.11.V.1.3",
+   "grade": 11,
+   "topic": "Context clues and word meaning",
+   "text": "Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases, appropriate to grade level."
+  },
+  {
+   "code": "ELA.12.R.1.1",
+   "grade": 12,
+   "topic": "Literary elements",
+   "text": "Evaluate how key elements enhance or add layers of meaning and/or style in a literary text and explain the functional significance of those elements in interpreting the text."
+  },
+  {
+   "code": "ELA.12.R.1.2",
+   "grade": 12,
+   "topic": "Theme",
+   "text": "Analyze two or more themes and evaluate their development throughout a literary text."
+  },
+  {
+   "code": "ELA.12.R.1.3",
+   "grade": 12,
+   "topic": "Perspective and point of view",
+   "text": "Evaluate the development of character perspective, including conflicting perspectives."
+  },
+  {
+   "code": "ELA.12.R.1.4",
+   "grade": 12,
+   "topic": "Poetry",
+   "text": "Evaluate works of major poets in their historical context."
+  },
+  {
+   "code": "ELA.12.R.2.1",
+   "grade": 12,
+   "topic": "Text structure",
+   "text": "Evaluate the structure(s) and features in texts, identifying how the author could make the text(s) more effective."
+  },
+  {
+   "code": "ELA.12.R.2.2",
+   "grade": 12,
+   "topic": "Central idea",
+   "text": "Evaluate how an author develops the central idea(s), identifying how the author could make the support more effective."
+  },
+  {
+   "code": "ELA.12.R.2.3",
+   "grade": 12,
+   "topic": "Purpose and perspective",
+   "text": "Evaluate an author's choices in establishing and achieving purpose(s)."
+  },
+  {
+   "code": "ELA.12.R.2.4",
+   "grade": 12,
+   "topic": "Argument",
+   "text": "Compare the development of multiple arguments in related texts, evaluating the validity of the claims, the authors' reasoning, use of the same information, and/or the authors' rhetoric."
+  },
+  {
+   "code": "ELA.12.R.3.1",
+   "grade": 12,
+   "topic": "Figurative language",
+   "text": "Evaluate an author's use of figurative language."
+  },
+  {
+   "code": "ELA.12.R.3.2",
+   "grade": 12,
+   "topic": "Paraphrase and summarize",
+   "text": "Paraphrase content from grade-level texts."
+  },
+  {
+   "code": "ELA.12.R.3.3",
+   "grade": 12,
+   "topic": "Comparing texts",
+   "text": "Analyze the influence of classic literature on contemporary world texts."
+  },
+  {
+   "code": "ELA.12.R.3.4",
+   "grade": 12,
+   "topic": "Rhetoric",
+   "text": "Evaluate rhetorical choices across multiple texts."
+  },
+  {
+   "code": "ELA.12.V.1.1",
+   "grade": 12,
+   "topic": "Academic vocabulary",
+   "text": "Integrate academic vocabulary appropriate to grade level in speaking and writing."
+  },
+  {
+   "code": "ELA.12.V.1.2",
+   "grade": 12,
+   "topic": "Word parts and origins",
+   "text": "Apply knowledge of etymology, derivations, and commonly used foreign phrases to determine meanings of words and phrases in grade-level content."
+  },
+  {
+   "code": "ELA.12.V.1.3",
+   "grade": 12,
+   "topic": "Context clues and word meaning",
+   "text": "Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases, appropriate to grade level."
+  }
+ ]
+}

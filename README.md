@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LitSketch
 
-## Getting Started
+**An AmplifiED tool.** LitSketch turns a reading passage into printable, accessible doodle notes for grades 6 to 12, aligned to Florida B.E.S.T. ELA benchmarks.
 
-First, run the development server:
+A teacher pastes or uploads a passage, picks a grade and benchmark, and taps one button. They get:
+- convergent notes,
+- divergent notes,
+- an answer key,
+- and the passage with numbered paragraphs.
+
+They can edit any of it on screen, then print, share, or save.
+
+## Run it locally
 
 ```bash
+npm install
+npx playwright install chromium webkit   # for tests and icon rendering
+cp .env.example .env.local               # add OPENAI_API_KEY; leave it blank for sample mode
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With no `OPENAI_API_KEY`, development runs in **sample mode**: every request returns the built-in sample story's notes. Use this to try the flow without spending API credits.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See `.env.example`. `OPENAI_API_KEY` is only read on the server (`lib/ai/generate.ts` imports `server-only`). Never give it a `NEXT_PUBLIC_` prefix.
 
-## Learn More
+## How it works
 
-To learn more about Next.js, take a look at the following resources:
+| Piece | Where |
+|---|---|
+| 3-step flow | `components/flow/` |
+| Benchmark list (105 Reading and Vocabulary benchmarks, grades 6–12) | `lib/standards/best-ela-6-12.json` |
+| Generation prompt and JSON schema | `lib/ai/prompt.ts`, `lib/ai/schema.ts` |
+| Quote, vocab, cloze, and length checks (one automatic retry) | `lib/ai/verify.ts` |
+| Doodle-note templates (HTML and SVG) | `templates/` |
+| Page styles shared by screen, print, and PDF | `styles/doodle.css` |
+| Tagged PDF via headless Chromium | `app/api/pdf/route.ts` |
+| Word, PDF, and text upload | `app/api/extract/route.ts` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Pages are fixed letter-size sheets. Each sheet draws its own header and footer, so the benchmark code prints on every page in every browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+A hidden print-size copy of the notes is measured after every edit:
+- If a page is too full, its text shrinks slightly, never below 9.5pt.
+- If a page still won't fit, a message appears above it so the teacher can shorten the text.
+- Printing and the PDF both use this same copy.
 
-## Deploy on Vercel
+## Tests
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npx playwright test               # 7 device profiles, axe WCAG 2.2 AA checks, touch targets, PDF download
+npx tsx scripts/check-verify.ts   # the quote checker catches invented quotes
+node scripts/snapshot-pages.mjs   # saves a PNG of every printed page to test-results/pages
+node scripts/snapshot-screens.mjs # saves screens at iPhone SE, iPad dark, and desktop high contrast
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The tests can't replace a real device for VoiceOver, the Safari print dialog, or Add to Home Screen. Use `docs/device-checklist.md` for those.
+
+## Deploy (Vercel)
+
+1. Push this repo to GitHub as `litsketch`.
+2. In Vercel, use **Add New → Project** and import the repo. The defaults are correct.
+3. Add `OPENAI_API_KEY` under **Settings → Environment Variables**.
+4. Every push to `main` deploys automatically.
+
+PDF export uses `@sparticuz/chromium`. The route allows 60 seconds and needs about 1 GB of memory, which is the Vercel default.
+
+## Benchmark source
+
+The benchmark wording comes from the Florida B.E.S.T. ELA Standards (FLDOE). It was retrieved 2026-10-11 from the Achievement Standards Network listing. Spot-check it against the official FLDOE document before the pilot.
