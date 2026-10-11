@@ -10,11 +10,11 @@ export function pdfFileName(title: string, docLabel: string): string {
   return `${slug || "litsketch"}.pdf`;
 }
 
-export async function makePdf(html: string, title: string, fileName: string): Promise<File> {
+export async function makePdf(html: string, title: string, fileName: string, answers = false): Promise<File> {
   const res = await fetch("/api/pdf", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ html, title, lang: "en" }),
+    body: JSON.stringify({ html, title, lang: "en", answers }),
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

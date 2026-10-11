@@ -46,7 +46,7 @@ export async function expectTouchTargets(page: Page) {
       ),
     );
     return els
-      .filter((el) => el.offsetParent !== null && !el.closest(".print-root, .measure-root, .ls-page"))
+      .filter((el) => el.offsetParent !== null && !el.closest(".print-root, .measure-root, .sheet"))
       .map((el) => {
         const r = el.getBoundingClientRect();
         return { what: (el.textContent || el.getAttribute("aria-label") || el.tagName).trim().slice(0, 40), w: r.width, h: r.height };

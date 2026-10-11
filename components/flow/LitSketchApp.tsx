@@ -7,10 +7,10 @@ import { StepStandard } from "./StepStandard";
 import { StepGenerate } from "./StepGenerate";
 import { ResultsView } from "@/components/results/ResultsView";
 import { useHydrated } from "@/lib/useHydrated";
-import { EMPTY_DRAFT, clearDraft, loadDraft, saveDraft, type Draft } from "@/lib/draft";
+import { DEFAULT_VIEW, EMPTY_DRAFT, clearDraft, loadDraft, saveDraft, type Draft } from "@/lib/draft";
 import { splitParagraphs } from "@/lib/passage";
 import { findBenchmark } from "@/lib/standards";
-import type { Generation, Resource } from "@/lib/ai/schema";
+import { pickLayout, type Generation, type Resource } from "@/lib/ai/schema";
 import { DEMO_BENCHMARK, DEMO_GRADE, DEMO_PASSAGE, DEMO_TITLE } from "@/lib/ai/demo";
 
 export function LitSketchApp() {
@@ -71,11 +71,12 @@ export function LitSketchApp() {
         benchmark: { code: bm.code, topic: bm.topic, text: bm.text },
         passage: { title: draft.title, paragraphs },
         content: { ...data.content, title: draft.title.trim() || data.content.title },
+        suggestedLayout: pickLayout(bm.code, data.content.text_type),
         warnings: data.warnings ?? [],
         demo: !!data.demo,
       };
       moved.current = true;
-      patch({ resource, step: 4, activeDoc: "convergent" });
+      patch({ resource, step: 4, view: { ...DEFAULT_VIEW, layout: resource.suggestedLayout } });
     } catch (err) {
       setGenError(
         err instanceof TypeError
@@ -99,8 +100,8 @@ export function LitSketchApp() {
         headingRef={headingRef}
         resource={draft.resource}
         onResourceChange={(resource) => patch({ resource })}
-        activeDoc={draft.activeDoc}
-        onActiveDocChange={(activeDoc) => patch({ activeDoc })}
+        view={draft.view}
+        onViewChange={(v) => setDraft((d) => ({ ...d, view: { ...d.view, ...v } }))}
         onStartOver={() => {
           clearDraft();
           moved.current = true;

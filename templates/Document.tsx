@@ -1,35 +1,19 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useLS } from "./context";
-import { PageFrame, type DocKind } from "./PageFrame";
-import { ConvergentPage1, ConvergentPage2 } from "./convergent/StructuredFrames";
-import { DivergentPage1, DivergentPage2 } from "./divergent/IdeaWeb";
-import { KeyConvergent, KeyDivergent } from "./answer-key/AnswerKey";
-import { PassageBody } from "./passage/PassagePage";
+import { VocabPage } from "./VocabPage";
+import { MapPage } from "./MapPage";
+import { GuidedPage } from "./GuidedPage";
+import { PassagePage } from "./PassagePage";
 
-/** All pages for one document, in print order. */
-export function Document({ doc }: { doc: DocKind }) {
-  const { passageGroups } = useLS();
-  const pages: { body: ReactNode; section?: string }[] =
-    doc === "convergent"
-      ? [{ body: <ConvergentPage1 /> }, { body: <ConvergentPage2 /> }]
-      : doc === "divergent"
-        ? [{ body: <DivergentPage1 /> }, { body: <DivergentPage2 /> }]
-        : [{ body: <KeyConvergent /> }, { body: <KeyDivergent /> }];
-
-  // Students get the numbered passage after their notes; the key does not need it.
-  if (doc !== "key") {
-    passageGroups.forEach((g) => pages.push({ body: <PassageBody indexes={g} />, section: "Passage" }));
-  }
-
+/** The chosen layout in the chosen thinker mode, then (optionally) the numbered passage. */
+export function Document({ withPassage }: { withPassage: boolean }) {
+  const { layout, passageGroups } = useLS();
   return (
-    <div className="ls-doc" data-doc={doc}>
-      {pages.map((p, i) => (
-        <PageFrame key={i} doc={doc} n={i + 1} total={pages.length} section={p.section}>
-          {p.body}
-        </PageFrame>
-      ))}
+    <div className="ls-doc">
+      {layout === "vocab" ? <VocabPage /> : layout === "map" ? <MapPage /> : <GuidedPage />}
+      {withPassage &&
+        passageGroups.map((g, i) => <PassagePage key={i} indexes={g} n={i + 1} total={passageGroups.length} />)}
     </div>
   );
 }

@@ -20,127 +20,186 @@ The wick caught. Light swelled inside the lens and swept across the water in a l
 
 When her father climbed the stairs at dawn, soaked and tired, he found Mara asleep against the wall with the matchbox still in her hand. He did not wake her. He only stood beside the lamp, watching it turn, and smiled.`;
 
+
+const D = (prompt: string, look_for: string) => ({ prompt, look_for });
+
 export const DEMO_GENERATION: Generation = {
   status: "ok",
   teacher_message: "",
   title: DEMO_TITLE,
+  author: "",
   text_type: "narrative",
-  benchmark_summary: "I can explain how the setting shapes a character and the events of a story.",
-  convergent: {
-    big_question: "How does the storm at the lighthouse change Mara and push the plot forward?",
-    vocab: [
-      { word: "groaned", definition: "Made a long, low sound, as if in pain.", paragraph: 2 },
-      { word: "lens", definition: "A curved glass piece that bends and focuses light.", paragraph: 3 },
-      { word: "braced", definition: "Held something firmly in place to keep it steady.", paragraph: 4 },
-      { word: "steady", definition: "Firm and even; not shaking or changing.", paragraph: 5 },
-    ],
-    sequence_label: "How the plot unfolds",
-    sequence: [
-      { starter: "First, the storm arrives and...", answer: "Mara is alone because her father went to the mainland." },
-      { starter: "Next, at the top of the tower...", answer: "Mara finds the lamp has gone out because of an open vent." },
-      { starter: "Then, Mara thinks about...", answer: "The fishing boats trying to find the harbor in the dark." },
-      { starter: "After that, Mara...", answer: "Closes the vent and lights the lamp with the third match." },
-      { starter: "Finally, her father...", answer: "Returns at dawn, finds her asleep, and smiles proudly." },
-    ],
-    evidence: [
+  topic_label: "Setting and character",
+
+  vocab: {
+    subtitle: "Words from The Keeper's Light",
+    words: [
       {
-        claim: "The storm makes Mara's job feel dangerous.",
-        paragraph: 2,
-        quote: "Now the tower groaned in the wind, and rain hammered the windows like fists.",
-        explanation: "The violent setting turns an easy job into a scary one.",
-      },
-      {
-        claim: "Mara is afraid but keeps going.",
-        paragraph: 3,
-        quote: "Her hands shook as she struck the first match.",
-        explanation: "Shaking hands show fear, but she still tries to light the lamp.",
-      },
-      {
-        claim: "Mara grows brave because she cares about others.",
+        word: "braced",
+        part_of_speech: "verb",
+        meaning: "held something firmly in place so it would not move or fall.",
+        sentence: "Mara braced the vent closed with her own shoulder so the wind could not get in.",
         paragraph: 4,
-        quote: "Somewhere out in that blackness, Mr. Okafor and his two sons were trying to find the harbor.",
-        explanation: "Thinking of the boats in the dark sea gives her a reason to be brave.",
+        picture: "door",
+        doodle_what: "a time you held firm when something pushed back",
+        task: {
+          kind: "circle",
+          prompt: "Circle the words that mean about the same as braced.",
+          chips: [
+            { text: "held firm", correct: true },
+            { text: "let go", correct: false },
+            { text: "propped", correct: true },
+            { text: "dropped", correct: false },
+            { text: "steadied", correct: true },
+            { text: "loosened", correct: false },
+          ],
+          sort_letters: [],
+          sort_items: [],
+          finish: [],
+        },
+        divergent: D(
+          "When have you had to brace yourself for something hard? What helped you hold on?",
+          "Connects bracing to holding firm under pressure",
+        ),
+      },
+      {
+        word: "groaned",
+        part_of_speech: "verb",
+        meaning: "made a long, low sound, as if hurting or straining.",
+        sentence: "The old tower groaned as the storm pushed against its walls.",
+        paragraph: 2,
+        picture: "speech bubble",
+        doodle_what: "the sound the storm makes and how it feels",
+        task: {
+          kind: "sort",
+          prompt: "Groan or cheer? Write G or C.",
+          chips: [],
+          sort_letters: [
+            { letter: "G", meaning: "groan" },
+            { letter: "C", meaning: "cheer" },
+          ],
+          sort_items: [
+            { text: "Your team loses the big game.", answer: "G" },
+            { text: "School is canceled for a snow day.", answer: "C" },
+            { text: "The old stairs creak under heavy boots.", answer: "G" },
+          ],
+          finish: [],
+        },
+        divergent: D(
+          "Why might the author make the tower groan instead of just creak?",
+          "Sees the storm making the setting feel alive",
+        ),
+      },
+      {
+        word: "steady",
+        part_of_speech: "adjective",
+        meaning: "firm and even; not shaking or changing.",
+        sentence: "Once the wick caught, a long, steady beam swept across the dark water.",
+        paragraph: 5,
+        picture: "heart",
+        doodle_what: "someone who stays steady for you when things get hard",
+        task: {
+          kind: "finish",
+          prompt: "Finish the sentences.",
+          chips: [],
+          sort_letters: [],
+          sort_items: [],
+          finish: ["At first, Mara's hands [[shook]] as she struck the match.", "The steady beam helped the [[boats]] find the harbor."],
+        },
+        divergent: D(
+          "How does Mara become steady by the end? What changed inside her?",
+          "Links her calm to caring about the boats",
+        ),
       },
     ],
-    cloze: {
-      text: "During a ___ at Cedar Point, Mara must keep the lighthouse lamp lit while her ___ is away. The wind blows open a ___ and the flame goes out. Thinking of the fishing ___, she blocks the wind with her shoulder. The third ___ lights the wick, and the boats find their way home.",
-      answers: ["storm", "father", "vent", "boats", "match"],
-      distractors: ["ferry", "radio"],
-    },
-    checks: [
+  },
+
+  map: {
+    title: "Story Map",
+    how: "Fill each circle, then follow the arrows. Read the words on the arrows out loud with your answers to retell the whole story.",
+    center: ["The Keeper's", "Light"],
+    orbits: [
       {
-        question: "Why is Mara alone at the lighthouse?",
-        answer: "Her father rowed to the mainland for medicine, and the ferry stopped running.",
+        heading: "Setting",
+        icon_hint: "storm",
+        lines: ["Where: [[a lighthouse]]", "When: [[a stormy night]]"],
         paragraph: 1,
+        divergent: D("How would the story change on a calm, sunny night?", "Explains the storm creates the danger"),
       },
       {
-        question: "What part of the setting causes the lamp to go out?",
-        answer: "The wind blew open a vent and put out the flame.",
+        heading: "Character",
+        icon_hint: "person",
+        lines: ["Mara must keep the [[lamp]] lit.", "She is home [[alone]]."],
+        paragraph: 2,
+        divergent: D("What kind of person is Mara before the lamp goes out?", "Uses a detail about her nerves or duty"),
+      },
+      {
+        heading: "Conflict",
+        icon_hint: "conflict",
+        lines: ["The wind blows open a [[vent]].", "The [[flame]] goes out."],
         paragraph: 3,
+        divergent: D("What would you have done when the first two matches failed?", "Weighs a choice against the danger"),
       },
       {
-        question: "How is Mara different at the end than at the start?",
-        answer: "She goes from nervous and shaky to brave and successful.",
-        paragraph: 6,
+        heading: "Resolution",
+        icon_hint: "heart",
+        lines: ["She blocks the vent with her [[shoulder]].", "The [[third]] match lights the wick."],
+        paragraph: 4,
+        divergent: D("Why does her father smile instead of waking her?", "Infers pride or trust from the ending"),
       },
     ],
-    sum_it_up: "In one sentence, tell how the storm helped show who Mara really is.",
+    links: ["who must…", "but…", "so then…"],
+    banner: {
+      heading: "Theme",
+      starter: "In this story, the storm shows that courage means",
+      divergent: D("What does the storm teach Mara about herself?", "States a lesson about courage or responsibility"),
+    },
   },
-  divergent: {
-    central_prompt: "How does a place, or a storm, test who we are?",
-    branches: [
-      "A sound or image from the storm that stuck with you",
-      "One word that describes Mara at the start",
-      "One word that describes Mara at the end",
-      "Who is counting on Mara tonight?",
-      "A moment when the setting made you nervous",
-      "What does the light mean to the people at sea?",
+
+  guided: {
+    concept: "Setting",
+    lead: "The [[setting]] is where and when a story takes place. It can shape what the [[characters]] do and how the [[plot]] unfolds.",
+    boxes: [
+      {
+        label: "THE PLACE",
+        icon_hint: "city",
+        text: "The story happens at a [[lighthouse]], far from the [[mainland]].",
+        paragraph: 1,
+        divergent: D("Why does being far from the mainland matter in this story?", "Notices no one can come help Mara"),
+      },
+      {
+        label: "THE TIME",
+        icon_hint: "clock",
+        text: "It happens at [[night]], just after [[supper]].",
+        paragraph: 1,
+        divergent: D("How would daytime change Mara's job?", "Explains the lamp only matters in the dark"),
+      },
+      {
+        label: "THE WEATHER",
+        icon_hint: "nature",
+        text: "The [[wind]] blows the vent open and puts out the [[flame]].",
+        paragraph: 3,
+        divergent: D("Which storm detail feels most dangerous to you, and why?", "Picks a detail and explains its effect"),
+      },
+      {
+        label: "SETTING SHAPES MARA",
+        icon_hint: "self",
+        text: "Alone in the storm, Mara grows from [[scared]] to [[brave]].",
+        paragraph: 4,
+        divergent: D("How is Mara different at dawn than at supper?", "Describes a change caused by the setting"),
+      },
     ],
-    sketch_prompt: "Draw the moment that matters most in the lighthouse tower.",
-    what_ifs: [
-      "What if the story happened on a calm, sunny night?",
-      "What if Mara's father had been home?",
-      "What if the third match had gone out too?",
-    ],
-    connect_prompt: "Think of a time weather or a place changed someone's plans. What happened?",
-    author_prompt: "Write a question you would ask the author about Mara.",
-    show_it_prompt: "Show how Mara changes from the start to the end of the story.",
+    your_turn: {
+      prompt: "Which parts of the setting make Mara's job harder? Check all that fit.",
+      choices: [
+        { text: "The storm", correct: true },
+        { text: "Being alone", correct: true },
+        { text: "The green light", correct: false },
+        { text: "Dawn", correct: false },
+      ],
+      paragraph: 2,
+      divergent: D("If you were Mara, which part of the setting would scare you most? Why?", "Connects a setting detail to a feeling"),
+    },
+    doodle_prompt: "Doodle the moment the setting is most dangerous for Mara.",
   },
-  divergent_key: [
-    {
-      section: "central",
-      look_fors: ["Links the setting to a choice a character makes", "Uses an example from the story"],
-      sample: "The storm tests Mara. Alone and scared, she still lights the lamp, which shows she is brave and caring.",
-    },
-    {
-      section: "branches",
-      look_fors: ["Details come from the text", "Start and end words show a change in Mara"],
-      sample: "Start: nervous. End: brave. Image: rain hammering the windows like fists.",
-    },
-    {
-      section: "sketch",
-      look_fors: ["Shows the tower, storm, or lamp", "Includes a label or caption"],
-      sample: "A sketch of Mara blocking the vent with her shoulder as the match lights, labeled 'third match.'",
-    },
-    {
-      section: "what_if",
-      look_fors: ["Explains how the plot would change", "Explains how Mara might be different"],
-      sample: "On a calm night the lamp would not go out, so Mara would never have a chance to prove her courage.",
-    },
-    {
-      section: "connect",
-      look_fors: ["Describes a real or imagined situation", "Shows how a place affected a person"],
-      sample: "When a hurricane closed our road, my neighbor checked on everyone on our street.",
-    },
-    {
-      section: "author",
-      look_fors: ["Question is open, not yes or no", "Connects to the setting or Mara's choices"],
-      sample: "Why did you choose a lighthouse, and not a house in town, for this story?",
-    },
-    {
-      section: "show_it",
-      look_fors: ["Shows a clear before and after", "Uses at least one detail from the text"],
-      sample: "List: shaky hands, two failed matches, then blocking the vent, lighting the lamp, sleeping peacefully.",
-    },
-  ],
 };

@@ -15,7 +15,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 for (const j of jobs) {
   const p = j.pad * 48;
-  const body = j.round ? svg : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-p} ${-p} ${48 + 2 * p} ${48 + 2 * p}"><rect x="${-p}" y="${-p}" width="${48 + 2 * p}" height="${48 + 2 * p}" fill="#0b6b66"/>${inner}</svg>`;
+  const body = j.round ? svg : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-p} ${-p} ${48 + 2 * p} ${48 + 2 * p}"><rect x="${-p}" y="${-p}" width="${48 + 2 * p}" height="${48 + 2 * p}" fill="#1b4d8f"/>${inner}</svg>`;
   await page.setViewportSize({ width: j.size, height: j.size });
   await page.setContent(`<html><body style="margin:0;background:transparent">${body.replace("<svg ", `<svg width="${j.size}" height="${j.size}" `)}</body></html>`);
   await page.screenshot({ path: new URL(`../public/icons/${j.file}`, import.meta.url).pathname.replace(/^\/(\w:)/, "$1"), omitBackground: true });

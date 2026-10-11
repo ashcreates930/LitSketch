@@ -1,82 +1,71 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from "react";
 import { createPortal } from "react-dom";
-import type { Resource } from "@/lib/ai/schema";
+import type { LayoutKind, Resource, ThinkerMode } from "@/lib/ai/schema";
+import type { View } from "@/lib/draft";
 import { LSProvider, setAt, type Path } from "@/templates/context";
-import { DOCS, PageFrame, type DocKind } from "@/templates/PageFrame";
 import { Document } from "@/templates/Document";
-import { PassageBody } from "@/templates/passage/PassagePage";
+import { PassagePage } from "@/templates/PassagePage";
+import { LAYOUT_NAMES } from "@/templates/parts";
 import { Msg } from "@/components/Msg";
 import { useHydrated } from "@/lib/useHydrated";
-import { ActionBar } from "./ActionBar";
+import { Toolbar } from "./Toolbar";
 
-const ORDER: DocKind[] = ["convergent", "divergent", "key"];
-const TAB_SUB: Record<DocKind, string> = {
-  convergent: "Step by step",
-  divergent: "Open-ended",
-  key: "For you",
-};
+const MODES: { key: ThinkerMode; label: string; sub: string }[] = [
+  { key: "convergent", label: "Convergent", sub: "Blanks and answers" },
+  { key: "divergent", label: "Divergent", sub: "Open questions" },
+];
+const LAYOUTS: LayoutKind[] = ["vocab", "map", "guided"];
 
 type Props = {
   headingRef: RefObject<HTMLHeadingElement | null>;
   resource: Resource;
   onResourceChange: (r: Resource) => void;
-  activeDoc: DocKind;
-  onActiveDocChange: (d: DocKind) => void;
+  view: View;
+  onViewChange: (v: Partial<View>) => void;
   onStartOver: () => void;
 };
 
-export function ResultsView({ headingRef, resource, onResourceChange, activeDoc, onActiveDocChange, onStartOver }: Props) {
+export function ResultsView({ headingRef, resource, onResourceChange, view, onViewChange, onStartOver }: Props) {
   const allParas = useMemo(() => resource.passage.paragraphs.map((_, i) => i), [resource.passage.paragraphs]);
   const [passageGroups, setPassageGroups] = useState<number[][]>([allParas]);
   const [overflow, setOverflow] = useState<string[]>([]);
-  const [wide, setWide] = useState(false);
   const mounted = useHydrated();
-  const screenRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
-  const tabRefs = useRef<Record<DocKind, HTMLButtonElement | null>>({ convergent: null, divergent: null, key: null });
+  const modeRefs = useRef<Record<ThinkerMode, HTMLButtonElement | null>>({ convergent: null, divergent: null });
 
   const update = useCallback(
     (path: Path, value: string) => onResourceChange(setAt(resource, path, value)),
     [resource, onResourceChange],
   );
 
-  // Show the two-column "paper" layout on screen only when there is room at the reader's text size.
-  useEffect(() => {
-    const el = screenRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => {
-      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      setWide(el.clientWidth / rem >= 40);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
   // Split the passage into printed pages by measuring it at paper size.
   useLayoutEffect(() => {
     if (!mounted) return;
-    let cancelled = false;
     const run = () => {
-      const root = measureRef.current;
-      const body = root?.querySelector<HTMLElement>(".ls-body");
-      if (!body || cancelled) return;
-      const avail = body.clientHeight;
-      const paras = Array.from(body.querySelectorAll<HTMLElement>(".ls-passage-p"));
+      const sheet = measureRef.current?.querySelector<HTMLElement>(".sheet");
+      const text = sheet?.querySelector<HTMLElement>(".ptext");
+      const foot = sheet?.querySelector<HTMLElement>(".foot");
+      const name = sheet?.querySelector<HTMLElement>(".namebar");
+      if (!sheet || !text || !foot || !name) return;
+      const top = text.getBoundingClientRect().top;
+      const footTop = foot.getBoundingClientRect().top - 12;
+      const firstCap = footTop - top;
+      const restCap = footTop - name.getBoundingClientRect().bottom - 16;
       const groups: number[][] = [];
       let current: number[] = [];
-      let startTop = 0;
-      paras.forEach((p, i) => {
-        const top = p.offsetTop;
-        const bottom = top + p.offsetHeight;
-        if (current.length && bottom - startTop > avail) {
+      let start = top;
+      let cap = firstCap;
+      sheet.querySelectorAll<HTMLElement>(".para").forEach((p, i) => {
+        const r = p.getBoundingClientRect();
+        if (current.length && r.bottom - start > cap) {
           groups.push(current);
           current = [];
-          startTop = top;
+          start = r.top;
+          cap = restCap;
         }
-        if (!current.length) startTop = top;
         current.push(i);
       });
       if (current.length) groups.push(current);
@@ -84,52 +73,37 @@ export function ResultsView({ headingRef, resource, onResourceChange, activeDoc,
     };
     run();
     document.fonts?.ready.then(run);
-    return () => {
-      cancelled = true;
-    };
   }, [mounted, resource.passage.paragraphs]);
 
-  // Fit each printed page on one sheet: shrink text a little (never below 9.5pt),
-  // and list any page that still will not fit so the teacher can shorten it.
+  // Fit each printed sheet on one page: shrink a little (to 85%), then warn if it still won't fit.
   useLayoutEffect(() => {
     if (!mounted) return;
     const check = () => {
-      const root = printRef.current;
-      if (!root) return;
       const bad: string[] = [];
-      root.querySelectorAll<HTMLElement>(".ls-page").forEach((page) => {
-        const body = page.querySelector<HTMLElement>(".ls-body");
-        if (!body) return;
-        const over = () => body.scrollHeight > body.clientHeight + 2;
-        page.style.fontSize = "";
-        for (let pt = 10.5; over() && pt >= 9.5; pt -= 0.5) page.style.fontSize = `${pt}pt`;
-        if (over()) bad.push(page.dataset.pageId ?? "");
+      printRef.current?.querySelectorAll<HTMLElement>(".sheet").forEach((sheet, i) => {
+        sheet.style.fontSize = "";
+        const base = parseFloat(getComputedStyle(sheet).fontSize);
+        const over = () => sheet.scrollHeight > sheet.clientHeight + 1;
+        for (let px = base - 0.25; over() && px >= base * 0.85; px -= 0.25) sheet.style.fontSize = `${px}px`;
+        if (over()) bad.push(i === 0 ? LAYOUT_NAMES[view.layout] : `Passage page ${i}`);
       });
       setOverflow((old) => (old.join() === bad.join() ? old : bad));
     };
     check();
     document.fonts?.ready.then(check);
-  }, [mounted, resource, passageGroups]);
+  }, [mounted, resource, passageGroups, view.layout, view.mode, view.answers, view.withPassage]);
 
-  function onTabKey(e: KeyboardEvent<HTMLButtonElement>) {
-    const i = ORDER.indexOf(activeDoc);
-    let next: DocKind | null = null;
-    if (e.key === "ArrowRight") next = ORDER[(i + 1) % ORDER.length];
-    if (e.key === "ArrowLeft") next = ORDER[(i + ORDER.length - 1) % ORDER.length];
-    if (e.key === "Home") next = ORDER[0];
-    if (e.key === "End") next = ORDER[ORDER.length - 1];
-    if (next) {
-      e.preventDefault();
-      onActiveDocChange(next);
-      tabRefs.current[next]?.focus();
-    }
+  function onModeKey(e: KeyboardEvent<HTMLButtonElement>) {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    e.preventDefault();
+    const next: ThinkerMode = view.mode === "convergent" ? "divergent" : "convergent";
+    onViewChange({ mode: next });
+    modeRefs.current[next]?.focus();
   }
 
   const c = resource.content;
-  const screenCtx = { resource, editable: true, update, passageGroups };
-  const printCtx = { resource, editable: false, update, passageGroups };
-  const pageCount = (doc: DocKind) => (doc === "key" ? 2 : 2 + passageGroups.length);
-  const overflowHere = overflow.filter((id) => id.startsWith(`${activeDoc}-`));
+  const ctx = { resource, update, layout: view.layout, mode: view.mode, passageGroups };
+  const sheetCount = 1 + (view.withPassage ? passageGroups.length : 0);
 
   return (
     <div className="container-wide">
@@ -140,7 +114,6 @@ export function ResultsView({ headingRef, resource, onResourceChange, activeDoc,
         <p className="lead" style={{ marginBottom: "0.75rem" }}>
           {c.title} · Grade {resource.grade} · {resource.benchmark.code}
         </p>
-
         {resource.demo && (
           <Msg kind="info">
             Sample mode: LitSketch is not connected to its writing service yet, so these are the sample-story notes.
@@ -157,51 +130,91 @@ export function ResultsView({ headingRef, resource, onResourceChange, activeDoc,
             </ul>
           </div>
         )}
-        <p className="msg msg-info">
-          <span>
-            <strong>To change any words,</strong> tap the text on a page (it has a dotted outline) and type. Your changes
-            are saved on this device and will print.
-          </span>
-        </p>
       </div>
 
-      <div className="tabs" role="tablist" aria-label="Choose which notes to see">
-        {ORDER.map((doc) => (
-          <button
-            key={doc}
-            ref={(el) => {
-              tabRefs.current[doc] = el;
-            }}
-            id={`tab-${doc}`}
-            role="tab"
-            type="button"
-            className="tab"
-            aria-selected={activeDoc === doc}
-            aria-controls="doc-panel"
-            tabIndex={activeDoc === doc ? 0 : -1}
-            onClick={() => onActiveDocChange(doc)}
-            onKeyDown={onTabKey}
-          >
-            {DOCS[doc].label}
-            <small>{TAB_SUB[doc]}</small>
-          </button>
-        ))}
+      <div className="view-controls">
+        <div className="control">
+          <p className="control-label" id="mode-label">
+            Version
+          </p>
+          <div className="tabs tabs-2" role="tablist" aria-labelledby="mode-label">
+            {MODES.map((m) => (
+              <button
+                key={m.key}
+                ref={(el) => {
+                  modeRefs.current[m.key] = el;
+                }}
+                id={`tab-${m.key}`}
+                role="tab"
+                type="button"
+                className="tab"
+                aria-selected={view.mode === m.key}
+                aria-controls="doc-panel"
+                tabIndex={view.mode === m.key ? 0 : -1}
+                onClick={() => onViewChange({ mode: m.key })}
+                onKeyDown={onModeKey}
+              >
+                {m.label}
+                <small>{m.sub}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="control">
+          <p className="control-label" id="layout-label">
+            Try another layout
+          </p>
+          <div className="seg" role="group" aria-labelledby="layout-label">
+            {LAYOUTS.map((l) => (
+              <button
+                key={l}
+                type="button"
+                className="seg-btn"
+                aria-pressed={view.layout === l}
+                onClick={() => onViewChange({ layout: l })}
+              >
+                {LAYOUT_NAMES[l]}
+                {l === resource.suggestedLayout && <small>LitSketch&apos;s pick</small>}
+              </button>
+            ))}
+          </div>
+        </div>
+        <label className="check" htmlFor="with-passage">
+          <input
+            id="with-passage"
+            type="checkbox"
+            checked={view.withPassage}
+            onChange={(e) => onViewChange({ withPassage: e.target.checked })}
+          />
+          <span>Add the passage with numbered paragraphs as the last page</span>
+        </label>
       </div>
 
-      <ActionBar resource={resource} activeDoc={activeDoc} pageCount={pageCount(activeDoc)} printRef={printRef} onStartOver={onStartOver} />
+      <Toolbar
+        resource={resource}
+        view={view}
+        sheetCount={sheetCount}
+        printRef={printRef}
+        onViewChange={onViewChange}
+        onStartOver={onStartOver}
+      />
 
-      <div id="doc-panel" role="tabpanel" aria-labelledby={`tab-${activeDoc}`} className="tab-panel" tabIndex={0}>
-        {overflowHere.length > 0 && (
+      <div id="doc-panel" role="tabpanel" aria-labelledby={`tab-${view.mode}`} className="tab-panel">
+        {overflow.length > 0 && (
           <Msg kind="error">
-            {overflowHere.length === 1 ? "Page " : "Pages "}
-            {overflowHere.map((id) => id.split("-")[1]).join(" and ")} {overflowHere.length === 1 ? "has" : "have"} too
-            much text to fit on one sheet. Shorten some of the writing on {overflowHere.length === 1 ? "that page" : "those pages"},
-            or the bottom will be cut off when printed.
+            {overflow.join(" and ")} {overflow.length === 1 ? "has" : "have"} too much text to print on one page. Shorten some
+            of the writing, or the bottom will be cut off.
           </Msg>
         )}
-        <div ref={screenRef} className={`ls-screen${wide ? " is-wide" : ""}`}>
-          <LSProvider value={screenCtx}>
-            <Document doc={activeDoc} />
+        <p className="msg msg-info edit-tip">
+          <span>
+            <strong>To change any words,</strong> tap the text on the page (it has a dotted outline) and type. Changes are
+            saved on this device and will print.
+          </span>
+        </p>
+        <div className={`ls-screen${view.colored ? " colored" : ""}${view.answers ? " answers" : ""}`}>
+          <LSProvider value={{ ...ctx, editable: true }}>
+            <Document withPassage={view.withPassage} />
           </LSProvider>
         </div>
       </div>
@@ -209,23 +222,15 @@ export function ResultsView({ headingRef, resource, onResourceChange, activeDoc,
       {mounted &&
         createPortal(
           <>
-            {/* Exactly what prints and what goes into the PDF. Hidden on screen. */}
-            <div ref={printRef} className="print-root ls-print" aria-hidden="true" inert>
-              <LSProvider value={printCtx}>
-                {ORDER.map((doc) => (
-                  <div key={doc} className="ls-doc-wrap" data-active={doc === activeDoc ? "" : undefined} data-doc-wrap={doc}>
-                    <Document doc={doc} />
-                  </div>
-                ))}
+            {/* Exactly what prints and what goes into the PDF: always black and white. Hidden on screen. */}
+            <div ref={printRef} className={`print-root ls-print${view.answers ? " answers" : ""}`} aria-hidden="true" inert>
+              <LSProvider value={{ ...ctx, editable: false }}>
+                <Document withPassage={view.withPassage} />
               </LSProvider>
             </div>
             <div ref={measureRef} className="measure-root ls-print" aria-hidden="true" inert>
-              <LSProvider value={printCtx}>
-                <div className="ls-measure-page">
-                  <PageFrame doc="convergent" n={1} total={1} section="Passage">
-                    <PassageBody indexes={allParas} />
-                  </PageFrame>
-                </div>
+              <LSProvider value={{ ...ctx, editable: false }}>
+                <PassagePage indexes={allParas} n={1} total={1} />
               </LSProvider>
             </div>
           </>,

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import type { Resource } from "@/lib/ai/schema";
+import type { LayoutKind, Resource, ThinkerMode } from "@/lib/ai/schema";
 import { EditableText } from "@/components/EditableText";
 
 export type Path = (string | number)[];
@@ -11,6 +11,8 @@ type Ctx = {
   /** true on screen (teacher can edit), false in the print/PDF copy */
   editable: boolean;
   update: (path: Path, value: string) => void;
+  layout: LayoutKind;
+  mode: ThinkerMode;
   /** paragraph indexes grouped into printed passage pages */
   passageGroups: number[][];
 };
@@ -46,17 +48,17 @@ type FieldProps = {
   label: string;
   as?: "span" | "p" | "div";
   className?: string;
-  /** set false to show static text even on screen */
-  editable?: boolean;
+  /** shown when the stored value is missing */
+  fallback?: string;
 };
 
 /** A piece of generated text: editable on screen, plain text in print. */
-export function Field({ path, label, as = "span", className = "", editable = true }: FieldProps) {
-  const { resource, editable: canEdit, update } = useLS();
-  const value = String(getAt(resource, path) ?? "");
-  if (!canEdit || !editable) {
+export function Field({ path, label, as = "span", className = "", fallback = "" }: FieldProps) {
+  const { resource, editable, update } = useLS();
+  const value = String(getAt(resource, path) ?? fallback);
+  if (!editable) {
     const Tag = as;
-    return <Tag className={className}>{value}</Tag>;
+    return <Tag className={className || undefined}>{value}</Tag>;
   }
   return <EditableText as={as} className={className} label={label} value={value} onChange={(v) => update(path, v)} />;
 }

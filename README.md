@@ -2,13 +2,23 @@
 
 **An AmplifiED tool.** LitSketch turns a reading passage into printable, accessible doodle notes for grades 6 to 12, aligned to Florida B.E.S.T. ELA benchmarks.
 
-A teacher pastes or uploads a passage, picks a grade and benchmark, and taps one button. They get:
-- convergent notes,
-- divergent notes,
-- an answer key,
-- and the passage with numbered paragraphs.
+A teacher pastes or uploads a passage, picks a grade and benchmark, and taps one button. LitSketch writes content for three doodle-note layouts and opens the best fit for the benchmark. The teacher can switch layouts with one tap:
+- **Doodle vocabulary:** 3 words, each with a big object to doodle inside.
+- **Story map** (an Idea map for nonfiction): circles around a center book, linked by retell phrases.
+- **Guided notes:** a concept with fill-in blanks, four typed boxes, Your Turn, and a doodle frame.
 
-They can edit any of it on screen, then print, share, or save.
+Each layout comes in two versions:
+- **Convergent:** blanks with hidden answers, plus circle and sort tasks.
+- **Divergent:** open prompts, teacher look-fors, and a "my own question" bubble.
+
+The toolbar matches the reference pages:
+- **Preview colored.**
+- **Show answers.** Print with it on to get the answer key.
+- **Print.**
+
+The passage with numbered paragraphs is an optional last page, on by default. Prompts point to it, for example "Find the clue in ¶4."
+
+**Visual standard:** `design-reference/LITSKETCH-STYLE-GUIDE.md` and the example pages in `design-reference/`. Match them exactly; do not invent a new style.
 
 ## Run it locally
 
@@ -32,25 +42,26 @@ See `.env.example`. `OPENAI_API_KEY` is only read on the server (`lib/ai/generat
 | 3-step flow | `components/flow/` |
 | Benchmark list (105 Reading and Vocabulary benchmarks, grades 6–12) | `lib/standards/best-ela-6-12.json` |
 | Generation prompt and JSON schema | `lib/ai/prompt.ts`, `lib/ai/schema.ts` |
-| Quote, vocab, cloze, and length checks (one automatic retry) | `lib/ai/verify.ts` |
-| Doodle-note templates (HTML and SVG) | `templates/` |
+| Vocab, blank, count, ¶, and length checks (one automatic retry) | `lib/ai/verify.ts` |
+| Page templates: vocab, story map, guided, passage | `templates/` |
+| Illustration library: 28 objects and 19 icons, tagged by keyword | `templates/art/` |
 | Page styles shared by screen, print, and PDF | `styles/doodle.css` |
 | Tagged PDF via headless Chromium | `app/api/pdf/route.ts` |
 | Word, PDF, and text upload | `app/api/extract/route.ts` |
 
-Pages are fixed letter-size sheets. Each sheet draws its own header and footer, so the benchmark code prints on every page in every browser.
+Each layout prints on one letter page at 0.4-inch margins, in black and white. The benchmark code is in the name bar and "LitSketch by AmplifiED" is in the footer.
 
-A hidden print-size copy of the notes is measured after every edit:
-- If a page is too full, its text shrinks slightly, never below 9.5pt.
-- If a page still won't fit, a message appears above it so the teacher can shorten the text.
-- Printing and the PDF both use this same copy.
+A hidden print-size copy is measured after every edit:
+- If a page is too full, its text shrinks a little, never below 85%.
+- If it still won't fit, a message asks the teacher to shorten it.
+- Printing and the PDF both use that copy.
 
 ## Tests
 
 ```bash
 npx playwright test               # 7 device profiles, axe WCAG 2.2 AA checks, touch targets, PDF download
-npx tsx scripts/check-verify.ts   # the quote checker catches invented quotes
-node scripts/snapshot-pages.mjs   # saves a PNG of every printed page to test-results/pages
+npx tsx scripts/check-verify.ts   # the checker catches missing words, blanks, and ¶ numbers
+node scripts/snapshot-pages.mjs   # PNG of every layout in both modes, plus colored and answer views
 node scripts/snapshot-screens.mjs # saves screens at iPhone SE, iPad dark, and desktop high contrast
 ```
 
@@ -58,7 +69,7 @@ The tests can't replace a real device for VoiceOver, the Safari print dialog, or
 
 ## Deploy (Vercel)
 
-1. Push this repo to GitHub as `litsketch`.
+1. The repo is on GitHub at `ashcreates930/LitSketch`.
 2. In Vercel, use **Add New → Project** and import the repo. The defaults are correct.
 3. Add `OPENAI_API_KEY` under **Settings → Environment Variables**.
 4. Every push to `main` deploys automatically.

@@ -1,0 +1,100 @@
+/* LitSketch doodle system. Print-first black-and-white line art, colorable by students.
+   "Preview colored" fills shapes and lettering to show a finished, colored example. */
+:root {
+  --paper: #ffffff;
+  --desk: #e9ebef;
+  --ink: #1f2024;
+  --graphite: #55585f;
+  --rule: #b9bec8;
+  --focus: #1b4d8f;
+  --display: "Bowlby One", "Arial Black", Impact, sans-serif;
+  --hand: "Kalam", "Chalkboard SE", "Comic Sans MS", cursive;
+  --body: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --stroke: 3;
+  /* Colored-preview palette: what a student might color it with */
+  --c1: #f6c95c; --c2: #8fc1e3; --c3: #f29e8e; --c4: #a8d5a2; --c5: #c9b3e6; --c6: #f7b267;
+}
+* { box-sizing: border-box; }
+html { font-size: 100%; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--desk); color: var(--ink);
+  font: 1rem/1.5 var(--body);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+button { font: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+.toolbar {
+  position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 0.5rem;
+  align-items: center; justify-content: space-between; padding: 0.6rem 1rem;
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.toolbar .name { font-family: var(--hand); font-weight: 700; font-size: 1.3rem; }
+.toolbar .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.btn {
+  min-height: 2.75rem; padding: 0.45rem 1rem; border-radius: 0.6rem; cursor: pointer;
+  font-weight: 700; background: var(--paper); color: var(--focus); border: 2px solid var(--focus);
+}
+.btn.solid { background: var(--focus); color: var(--paper); }
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* The sheet keeps letter proportions so screen matches print */
+.sheet {
+  width: min(100%, 51rem); margin: 1.25rem auto 3rem; background: var(--paper);
+  padding: 1.6rem clamp(0.9rem, 3.5vw, 2.2rem) 1.4rem;
+  box-shadow: 0 1px 2px rgba(31,32,36,.18), 0 10px 26px rgba(31,32,36,.08);
+  position: relative;
+}
+.namebar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem; font-family: var(--hand); font-size: 1.05rem; }
+.namebar .blank { display: inline-block; min-width: 9rem; border-bottom: 2px solid var(--ink); }
+.std { font-family: var(--body); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.01em; }
+
+/* Hollow lettering: students color it in */
+.hollow {
+  font-family: var(--display); font-weight: 400; line-height: 0.95; margin: 0;
+  color: var(--paper);
+  -webkit-text-stroke: 0.045em var(--ink); paint-order: stroke fill;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.hollow.sm { -webkit-text-stroke-width: 0.032em; letter-spacing: 0.05em; }
+.colored .hollow { color: var(--hc, var(--c1)); }
+@media (prefers-contrast: more) { .hollow { color: var(--ink); -webkit-text-stroke: 0; } }
+
+/* Black label bar, number tab */
+.bar {
+  display: inline-flex; align-items: baseline; gap: 0.5rem; background: var(--ink); color: var(--paper);
+  padding: 0.25rem 0.8rem 0.3rem; border-radius: 0.2rem 0.6rem 0.25rem 0.5rem;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.bar .n { font-family: var(--display); font-size: 1.15rem; }
+.bar .w { font-family: var(--display); font-size: 1.45rem; letter-spacing: 0.03em; line-height: 1.1; }
+
+/* Line art: every colorable region carries a fill class */
+svg.art { display: block; width: 100%; height: auto; overflow: visible; }
+.ln { fill: none; stroke: var(--ink); stroke-width: var(--stroke); stroke-linecap: round; stroke-linejoin: round; }
+.thin { stroke-width: 2; }
+.dash { stroke-dasharray: 6 7; }
+.fw { fill: var(--paper); stroke: var(--ink); stroke-width: var(--stroke); stroke-linejoin: round; stroke-linecap: round; }
+.colored .f1 { fill: var(--c1); } .colored .f2 { fill: var(--c2); } .colored .f3 { fill: var(--c3); }
+.colored .f4 { fill: var(--c4); } .colored .f5 { fill: var(--c5); } .colored .f6 { fill: var(--c6); }
+svg.art text { font-family: var(--hand); fill: var(--ink); }
+
+/* Handwritten prompts and writing lines */
+.prompt { font-family: var(--hand); font-weight: 700; font-size: 1.05rem; line-height: 1.25; margin: 0; }
+.say { font-family: var(--body); font-size: 0.95rem; margin: 0.15rem 0; }
+.say b { font-weight: 700; }
+.lines { height: calc(1.9rem * var(--n, 2)); background: repeating-linear-gradient(to bottom, transparent 0 calc(1.9rem - 2px), var(--rule) calc(1.9rem - 2px) 1.9rem); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.blank { display: inline-block; min-width: var(--w, 6rem); border-bottom: 2px solid var(--ink); text-align: center; font-family: var(--hand); font-weight: 700; color: transparent; }
+.answers .blank { color: #b0331f; }
+
+/* Circle-able word chips */
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; margin: 0.25rem 0 0; padding: 0; list-style: none; font-family: var(--hand); font-size: 1.1rem; }
+
+.foot { display: flex; justify-content: space-between; margin-top: 0.9rem; font-size: 0.75rem; color: var(--graphite); }
+
+@media print {
+  @page { size: letter; margin: 0.4in; }
+  body { background: #fff; padding: 0; }
+  .toolbar { display: none; }
+  .sheet { box-shadow: none; margin: 0; width: 100%; padding: 0; }
+}

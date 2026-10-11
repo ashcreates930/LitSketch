@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
     "/api/pdf": [
       "./styles/doodle.css",
       "./node_modules/@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-*-normal.woff2",
+      "./node_modules/@fontsource/bowlby-one/files/bowlby-one-latin-400-normal.woff2",
+      "./node_modules/@fontsource/kalam/files/kalam-latin-*-normal.woff2",
       "./node_modules/@sparticuz/chromium/bin/**",
     ],
   },

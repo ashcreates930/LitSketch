@@ -27,8 +27,8 @@ for (const s of shots) {
   await page.getByRole("heading", { name: /your notes are ready/i }).waitFor({ timeout: 60_000 });
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${out}/${s.name}-3.png`, fullPage: false });
-  await page.getByRole("tab", { name: /divergent/i }).click();
-  await page.locator(".ls-screen .ls-page").first().screenshot({ path: `${out}/${s.name}-4.png` });
+  await page.getByRole("tab", { name: /Divergent/ }).click();
+  await page.locator(".ls-screen .sheet").first().screenshot({ path: `${out}/${s.name}-4.png` });
   await ctx.close();
 }
 await browser.close();

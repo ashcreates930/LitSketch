@@ -1,4 +1,5 @@
-import { DIVERGENT_SECTIONS, type Generation } from "./schema";
+import type { Generation } from "./schema";
+import { countBlanks } from "@/lib/cloze";
 
 export type Issue = { repair: string; teacher: string };
 
@@ -9,16 +10,9 @@ export function looseText(s: string): string {
     .replace(/[‘’‛`]/g, "'")
     .replace(/[“”„]/g, '"')
     .replace(/[–—]/g, "-")
-    .replace(/…/g, "...")
     .replace(/[^a-z0-9' ]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-export const BLANK = /_{3,}/g;
-
-export function countBlanks(text: string): number {
-  return (text.match(BLANK) ?? []).length;
 }
 
 function words(s: string): number {
@@ -27,76 +21,78 @@ function words(s: string): number {
 
 export function verifyGeneration(g: Generation, paragraphs: string[]): Issue[] {
   const issues: Issue[] = [];
-  const whole = looseText(paragraphs.join(" "));
-  const count = (label: string, n: number, min: number, max = min) => {
-    if (n < min || n > max) {
-      const want = min === max ? `exactly ${min}` : `${min} to ${max}`;
-      issues.push({ repair: `${label} has ${n} items; it needs ${want}.`, teacher: `${label}: expected ${want} items, got ${n}.` });
+  const add = (repair: string, teacher: string) => issues.push({ repair, teacher });
+  const whole = ` ${looseText(paragraphs.join(" "))} `;
+  const max = paragraphs.length;
+
+  const count = (label: string, n: number, min: number, maxN = min) => {
+    if (n < min || n > maxN) {
+      const want = min === maxN ? `exactly ${min}` : `${min} to ${maxN}`;
+      add(`${label} has ${n} items; it needs ${want}.`, `${label}: expected ${want} items, got ${n}.`);
     }
   };
-
-  const c = g.convergent;
-  count("convergent.vocab", c.vocab.length, 4);
-  count("convergent.sequence", c.sequence.length, 4, 5);
-  count("convergent.evidence", c.evidence.length, 3);
-  count("convergent.checks", c.checks.length, 3);
-  count("divergent.branches", g.divergent.branches.length, 6);
-  count("divergent.what_ifs", g.divergent.what_ifs.length, 3);
-
-  const sections = g.divergent_key.map((k) => k.section);
-  for (const s of DIVERGENT_SECTIONS) {
-    if (!sections.includes(s)) {
-      issues.push({ repair: `divergent_key is missing the "${s}" section.`, teacher: `The answer key is missing look-fors for one section.` });
-    }
-  }
-
-  const maxPara = paragraphs.length;
-  const checkPara = (label: string, p: number) => {
-    if (p < 1 || p > maxPara) {
-      issues.push({ repair: `${label} cites ¶${p}, but the passage has ¶1-¶${maxPara}.`, teacher: `${label} points to a paragraph number that doesn't exist.` });
-    }
+  const para = (label: string, p: number) => {
+    if (p < 1 || p > max) add(`${label} cites ¶${p}, but the passage has ¶1-¶${max}.`, `${label} points to a paragraph that doesn't exist.`);
+  };
+  const long = (label: string, s: string, limit: number) => {
+    if (words(s) > limit + 4) add(`${label} is ${words(s)} words; the limit is ${limit}.`, `${label} is long and may not fit on the page.`);
+  };
+  const blanks = (label: string, s: string, min: number, maxB = 99) => {
+    const n = countBlanks(s);
+    if (n < min || n > maxB) add(`${label} needs ${min === maxB ? min : `${min} or more`} [[answer]] blanks; it has ${n}.`, `${label} is missing its fill-in blanks.`);
   };
 
-  c.evidence.forEach((e, i) => {
-    checkPara(`Evidence ${i + 1}`, e.paragraph);
-    const q = looseText(e.quote);
-    if (q && !whole.includes(q)) {
-      issues.push({
-        repair: `evidence[${i}].quote is not word for word from the passage: "${e.quote}".`,
-        teacher: `Evidence ${i + 1}: LitSketch could not find this quote word for word in your passage. Please check it.`,
-      });
+  // Doodle vocabulary
+  const v = g.vocab.words;
+  count("vocab.words", v.length, 3);
+  v.forEach((w, i) => {
+    const label = `Vocab word ${i + 1} (${w.word})`;
+    if (!whole.includes(` ${looseText(w.word)}`)) add(`vocab.words[${i}].word "${w.word}" does not appear in the passage.`, `Key word "${w.word}" was not found in your passage.`);
+    para(label, w.paragraph);
+    long(`${label} meaning`, w.meaning, 20);
+    long(`${label} sentence`, w.sentence, 22);
+    long(`${label} doodle prompt`, w.doodle_what, 12);
+    const t = w.task;
+    if (t.kind === "circle") {
+      if (t.chips.length < 4 || !t.chips.some((c) => c.correct) || t.chips.every((c) => c.correct)) {
+        add(`vocab.words[${i}].task (circle) needs 6 chips with 2 or 3 correct.`, `${label}: the circle-the-words task is incomplete.`);
+      }
+    } else if (t.kind === "sort") {
+      const letters = t.sort_letters.map((l) => l.letter.trim().toUpperCase());
+      if (letters.length !== 2 || t.sort_items.length < 2 || t.sort_items.some((s) => !letters.includes(s.answer.trim().toUpperCase()))) {
+        add(`vocab.words[${i}].task (sort) needs 2 letters and 3 items whose answers are one of those letters.`, `${label}: the sorting task is incomplete.`);
+      }
+    } else if (t.finish.length < 1 || t.finish.some((s) => countBlanks(s) !== 1)) {
+      add(`vocab.words[${i}].task (finish) needs 2 sentences with exactly one [[answer]] each.`, `${label}: the finish-the-sentence task is incomplete.`);
     }
-    if (words(e.quote) > 30) issues.push({ repair: `evidence[${i}].quote is longer than 30 words.`, teacher: `Evidence ${i + 1}: the quote is long and may not fit.` });
   });
 
-  c.vocab.forEach((v, i) => {
-    checkPara(`Key word ${i + 1}`, v.paragraph);
-    if (!whole.includes(looseText(v.word))) {
-      issues.push({
-        repair: `vocab[${i}].word "${v.word}" does not appear in the passage.`,
-        teacher: `Key word "${v.word}" was not found in your passage.`,
-      });
-    }
+  // Story / idea map
+  const m = g.map;
+  count("map.orbits", m.orbits.length, 4);
+  count("map.links", m.links.length, 3);
+  count("map.center", m.center.length, 1, 2);
+  m.orbits.forEach((o, i) => {
+    const label = `Map circle ${i + 1} (${o.heading})`;
+    para(label, o.paragraph);
+    if (o.lines.reduce((n, l) => n + countBlanks(l), 0) < 1) add(`map.orbits[${i}].lines need at least one [[answer]] blank.`, `${label} has no fill-in blank.`);
+    long(`${label} prompt`, o.divergent.prompt, 18);
   });
-  c.checks.forEach((q, i) => checkPara(`Question ${i + 1}`, q.paragraph));
 
-  const blanks = countBlanks(c.cloze.text);
-  if (blanks !== c.cloze.answers.length) {
-    issues.push({
-      repair: `cloze.text has ${blanks} blanks but cloze.answers has ${c.cloze.answers.length}. They must match.`,
-      teacher: `The fill-in summary has ${blanks} blanks but ${c.cloze.answers.length} answers.`,
-    });
+  // Guided notes
+  const gd = g.guided;
+  blanks("guided.lead", gd.lead, 2, 6);
+  count("guided.boxes", gd.boxes.length, 4);
+  gd.boxes.forEach((b, i) => {
+    const label = `Guided box ${i + 1} (${b.label})`;
+    para(label, b.paragraph);
+    blanks(`guided.boxes[${i}].text`, b.text, 1, 3);
+    long(`${label} prompt`, b.divergent.prompt, 18);
+  });
+  para("Your turn", gd.your_turn.paragraph);
+  if (gd.your_turn.choices.length < 3 || !gd.your_turn.choices.some((c) => c.correct)) {
+    add("guided.your_turn.choices needs 3 to 5 choices with at least one correct.", "The check-the-boxes question is incomplete.");
   }
-
-  const tooLong = (label: string, s: string, max: number) => {
-    if (words(s) > max + 4) issues.push({ repair: `${label} is ${words(s)} words; the limit is ${max}.`, teacher: `${label} is long and may not fit on the page.` });
-  };
-  tooLong("Big question", c.big_question, 18);
-  c.checks.forEach((q, i) => tooLong(`Question ${i + 1}`, q.question, 18));
-  g.divergent.branches.forEach((b, i) => tooLong(`Idea web prompt ${i + 1}`, b, 18));
-  g.divergent.what_ifs.forEach((b, i) => tooLong(`What-if prompt ${i + 1}`, b, 18));
-  c.vocab.forEach((v, i) => tooLong(`Definition ${i + 1}`, v.definition, 15));
-  c.sequence.forEach((s, i) => tooLong(`Sequence starter ${i + 1}`, s.starter, 10));
 
   return issues;
 }

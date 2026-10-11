@@ -3,26 +3,27 @@
 /* ---------- Color tokens ---------- */
 :root {
   color-scheme: light;
-  --bg: #f6f4ee;
+  /* design-reference/doodle.css: desk, paper, ink, graphite, rule, focus */
+  --bg: #e9ebef;
   --surface: #ffffff;
-  --surface-2: #efece3;
-  --text: #1b2331;
-  --muted: #4b5363;
-  --primary: #0b6b66;
-  --primary-hover: #08524e;
+  --surface-2: #f2f3f6;
+  --text: #1f2024;
+  --muted: #55585f;
+  --primary: #1b4d8f;
+  --primary-hover: #163f75;
   --on-primary: #ffffff;
-  --secondary-border: #0b6b66;
+  --secondary-border: #1b4d8f;
   --field-border: #6a6f79;
-  --border: #d3cec1;
+  --border: #b9bec8;
   --danger: #a3221a;
   --danger-bg: #fdeceb;
   --success: #1b6a31;
   --success-bg: #e8f5ec;
-  --info-bg: #e6f2f1;
-  --focus: #1846c9;
+  --info-bg: #eef3fa;
+  --focus: #1b4d8f;
   --focus-halo: #ffffff;
   --edit-outline: #8a8f99;
-  --accent: #f0b429;
+  --accent: #f6c95c;
   --bw: 2px;
 }
 
@@ -34,17 +35,17 @@
     --surface-2: #232b39;
     --text: #eef1f6;
     --muted: #bcc3cf;
-    --primary: #63d2ca;
-    --primary-hover: #8fe2dc;
-    --on-primary: #08201f;
-    --secondary-border: #63d2ca;
+    --primary: #8fb8ec;
+    --primary-hover: #b3cff3;
+    --on-primary: #0d1b2e;
+    --secondary-border: #8fb8ec;
     --field-border: #8f97a5;
     --border: #3a4352;
     --danger: #ff9f95;
     --danger-bg: #3a1c1a;
     --success: #8be0a2;
     --success-bg: #173322;
-    --info-bg: #15302f;
+    --info-bg: #172338;
     --focus: #ffd23f;
     --focus-halo: #10151e;
     --edit-outline: #8f97a5;
@@ -57,17 +58,17 @@
   --surface-2: #232b39;
   --text: #eef1f6;
   --muted: #bcc3cf;
-  --primary: #63d2ca;
-  --primary-hover: #8fe2dc;
-  --on-primary: #08201f;
-  --secondary-border: #63d2ca;
+  --primary: #8fb8ec;
+  --primary-hover: #b3cff3;
+  --on-primary: #0d1b2e;
+  --secondary-border: #8fb8ec;
   --field-border: #8f97a5;
   --border: #3a4352;
   --danger: #ff9f95;
   --danger-bg: #3a1c1a;
   --success: #8be0a2;
   --success-bg: #173322;
-  --info-bg: #15302f;
+  --info-bg: #172338;
   --focus: #ffd23f;
   --focus-halo: #10151e;
   --edit-outline: #8f97a5;
@@ -195,8 +196,10 @@ a {
   flex: none;
 }
 .brand-name {
-  font-size: 1.35rem;
+  font-family: "Kalam", "Chalkboard SE", "Comic Sans MS", cursive;
+  font-size: 1.45rem;
   font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.01em;
 }
 .brand-by {
@@ -429,14 +432,14 @@ select {
   gap: 0.5rem;
   min-height: max(2.75rem, 44px);
   min-width: max(2.75rem, 44px);
-  padding: 0.65rem 1.25rem;
+  padding: 0.45rem 1rem;
   font: inherit;
   font-weight: 700;
   font-size: 1.05rem;
-  border-radius: 0.65rem;
+  border-radius: 0.6rem;
   border: var(--bw) solid var(--secondary-border);
   background: var(--surface);
-  color: var(--text);
+  color: var(--primary);
   cursor: pointer;
   text-decoration: none;
   touch-action: manipulation;
@@ -445,11 +448,19 @@ select {
 .btn:hover {
   background: var(--surface-2);
 }
+/* reference .btn.solid and pressed toggles */
+.btn[aria-pressed="true"] {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--surface);
+}
+.btn.solid,
 .btn-primary {
   background: var(--primary);
   border-color: var(--primary);
   color: var(--on-primary);
 }
+.btn.solid:hover,
 .btn-primary:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
@@ -640,19 +651,46 @@ select {
 .results-head {
   margin-bottom: 1rem;
 }
-.tabs {
+.view-controls {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.4rem;
-  margin: 1rem 0 0;
-  padding: 0.35rem;
-  background: var(--surface-2);
-  border-radius: 0.9rem;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
 }
-.tab {
+@media (min-width: 48em) {
+  .view-controls {
+    grid-template-columns: 1fr 1.6fr;
+    align-items: start;
+  }
+  .view-controls .check {
+    grid-column: 1 / -1;
+  }
+}
+.control-label {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+}
+.tabs,
+.seg {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  background: var(--surface-2);
+  border-radius: 0.8rem;
+}
+.tabs-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.seg {
+  grid-template-columns: repeat(3, 1fr);
+}
+.tab,
+.seg-btn {
   min-height: 3.25rem;
   border: var(--bw) solid transparent;
-  border-radius: 0.65rem;
+  border-radius: 0.6rem;
   background: transparent;
   color: var(--text);
   font: inherit;
@@ -663,72 +701,78 @@ select {
   padding: 0.4rem 0.5rem;
   touch-action: manipulation;
 }
-.tab small {
+.tab small,
+.seg-btn small {
   display: block;
   font-weight: 400;
   font-size: 0.82rem;
   color: var(--muted);
 }
-.tab[aria-selected="true"] {
+.tab[aria-selected="true"],
+.seg-btn[aria-pressed="true"] {
   background: var(--surface);
   border-color: var(--primary);
+}
+@media (max-width: 30em) {
+  .seg {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Toolbar: design-reference/doodle.css .toolbar */
+.toolbar {
+  position: static;
+  z-index: 10;
+  margin: 1rem -1rem 0;
+  padding: 0.6rem 1rem;
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+}
+@media (min-width: 48em) and (min-height: 40em) {
+  .toolbar {
+    position: sticky;
+    top: env(safe-area-inset-top);
+  }
+}
+.toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+.toolbar .name {
+  font-family: "Kalam", "Chalkboard SE", "Comic Sans MS", cursive;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+.toolbar .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+}
+.toolbar .hint {
+  margin: 0.4rem 0 0;
+}
+@media (max-width: 30em) {
+  .toolbar .actions .btn {
+    flex: 1 1 100%;
+  }
 }
 .tab-panel {
   margin-top: 1rem;
 }
-.tab-panel:focus-visible {
-  outline-offset: 4px;
-}
-.action-bar {
-  position: static;
-  z-index: 5;
-  margin: 1rem -1rem 0;
-  padding: 0.75rem 1rem;
-  background: var(--surface);
-  border-block: 1px solid var(--border);
-}
-/* On roomy screens keep Print and Save in view while scrolling through pages */
-@media (min-width: 48em) and (min-height: 40em) {
-  .action-bar {
-    position: sticky;
-    top: env(safe-area-inset-top);
-    box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 0.08);
-  }
-}
-.action-bar .actions {
-  margin: 0;
-}
-.action-bar .actions .btn {
-  flex: 1 1 12rem;
-}
-.overflow-msg {
-  margin: 0 0 0.5rem;
+.edit-tip {
+  margin: 0 auto 1rem;
+  max-width: 51rem;
 }
 
-/* On-screen page previews */
+/* On-screen sheets sit on the desk color, like the reference pages */
 .ls-screen {
   display: grid;
-  gap: 1.25rem;
-}
-.ls-screen .ls-page {
-  --ls-ink: var(--text);
-  --ls-paper: var(--surface);
-  --ls-soft: var(--muted);
-  font-size: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  box-shadow: 0 0.25rem 1.25rem rgb(0 0 0 / 0.06);
-  width: 100%;
-  max-width: 54rem;
-  margin: 0 auto;
-}
-.ls-screen.is-wide .ls-page {
-  padding: 2.25rem 2.5rem;
-}
-.page-wrap {
-  display: grid;
-  gap: 0.5rem;
+  gap: 1.5rem;
+  padding: 0.5rem 0 1rem;
 }
 .editable {
   outline: 1.5px dashed var(--edit-outline);
@@ -745,13 +789,11 @@ span.editable {
   max-width: 100%;
 }
 .ls-screen .editable {
-  min-height: 1.75em;
-  padding: 0.15em 0.3em;
+  min-height: 1.6em;
+  padding: 0 0.15em;
 }
-.ls-screen .ls-key-dl > div,
-.ls-screen .ls-key-ol,
-.ls-screen .ls-key-ul {
-  row-gap: 0.4em;
+.ls-screen .sheet .blank.editable:focus {
+  color: var(--answer);
 }
 .editable:focus,
 .editable:focus-visible {
@@ -793,7 +835,25 @@ span.editable {
     left: auto;
     visibility: visible;
   }
-  .print-root .ls-doc-wrap:not([data-active]) {
-    display: none;
-  }
+}
+
+/* Inside a doodle sheet, editable text flows like the printed words: dotted underline-style
+   outline, no extra boxes (inline text targets are exempt from WCAG 2.5.8 target size). */
+.ls-screen .sheet span.editable {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  outline: 1px dotted var(--edit-outline);
+  outline-offset: 1px;
+}
+.ls-screen .sheet p.editable,
+.ls-screen .sheet div.editable {
+  outline: 1px dotted var(--edit-outline);
+  outline-offset: 2px;
+  min-height: 0;
+  padding: 0;
+}
+.ls-screen .sheet .editable:focus {
+  outline: 3px solid var(--focus);
+  background: #eef3fa;
 }

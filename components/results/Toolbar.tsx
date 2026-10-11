@@ -2,15 +2,17 @@
 
 import { useRef, useState, type RefObject } from "react";
 import type { Resource } from "@/lib/ai/schema";
-import { DOCS, type DocKind } from "@/templates/PageFrame";
+import type { View } from "@/lib/draft";
+import { LAYOUT_NAMES } from "@/templates/parts";
 import { Msg } from "@/components/Msg";
 import { downloadFile, makePdf, pdfFileName, shareFile, shouldUseShareSheet } from "@/lib/share";
 
 type Props = {
   resource: Resource;
-  activeDoc: DocKind;
-  pageCount: number;
+  view: View;
+  sheetCount: number;
   printRef: RefObject<HTMLDivElement | null>;
+  onViewChange: (v: Partial<View>) => void;
   onStartOver: () => void;
 };
 
@@ -21,27 +23,19 @@ type PdfState =
   | { kind: "done"; text: string }
   | { kind: "error"; text: string };
 
-const ICON = {
-  print: "M7 9V3h10v6 M7 17H4v-7h16v7h-3 M7 14h10v7H7z",
-  share: "M12 3v12 M7 8l5-5 5 5 M5 12v8h14v-8",
-  restart: "M4 4v6h6 M4.5 15a8 8 0 1 0 1.9-8.3L4 10",
-};
-
-function Svg({ d }: { d: string }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d={d} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-export function ActionBar({ resource, activeDoc, pageCount, printRef, onStartOver }: Props) {
+/**
+ * The reference toolbar (design-reference/doodle.js): Preview colored · Show answers · Print,
+ * plus Save or share PDF and Start over. Screen only.
+ */
+export function Toolbar({ resource, view, sheetCount, printRef, onViewChange, onStartOver }: Props) {
   const [pdf, setPdf] = useState<PdfState>({ kind: "idle" });
   const [confirming, setConfirming] = useState(false);
   const confirmRef = useRef<HTMLButtonElement>(null);
   const restartRef = useRef<HTMLButtonElement>(null);
-  const label = DOCS[activeDoc].label;
-  const pages = `${pageCount} ${pageCount === 1 ? "page" : "pages"}`;
+  const name = LAYOUT_NAMES[view.layout];
+  const modeName = view.mode === "convergent" ? "Convergent" : "Divergent";
+  const docLabel = `${name} ${modeName}${view.answers ? " answer key" : ""}`;
+  const pages = `${sheetCount} ${sheetCount === 1 ? "page" : "pages"}`;
 
   function commitEdits() {
     (document.activeElement as HTMLElement | null)?.blur?.();
@@ -49,14 +43,13 @@ export function ActionBar({ resource, activeDoc, pageCount, printRef, onStartOve
 
   function print() {
     commitEdits();
-    // Let React flush the last edit into the print copy before the dialog opens.
     requestAnimationFrame(() => window.print());
   }
 
   async function sendFile(file: File) {
     if (shouldUseShareSheet(file)) {
       try {
-        const r = await shareFile(file, `${resource.content.title}: ${label}`);
+        const r = await shareFile(file, `${resource.content.title}: ${docLabel}`);
         setPdf(r === "shared" ? { kind: "done", text: "Shared." } : { kind: "ready", file });
       } catch {
         // Safari needs a fresh tap after a slow download; offer one.
@@ -74,13 +67,18 @@ export function ActionBar({ resource, activeDoc, pageCount, printRef, onStartOve
     commitEdits();
     setPdf({ kind: "making" });
     await new Promise((r) => requestAnimationFrame(r));
-    const doc = printRef.current?.querySelector(`[data-doc-wrap="${activeDoc}"] .ls-doc`);
+    const doc = printRef.current?.querySelector(".ls-doc");
     if (!doc) {
       setPdf({ kind: "error", text: "Something went wrong. Please use the Print button instead." });
       return;
     }
     try {
-      const file = await makePdf(doc.outerHTML, `${resource.content.title}: ${label}`, pdfFileName(resource.content.title, label));
+      const file = await makePdf(
+        doc.outerHTML,
+        `${resource.content.title}: ${docLabel}`,
+        pdfFileName(resource.content.title, docLabel),
+        view.answers,
+      );
       await sendFile(file);
     } catch (err) {
       setPdf({ kind: "error", text: err instanceof Error ? err.message : "LitSketch couldn't make the PDF." });
@@ -88,37 +86,55 @@ export function ActionBar({ resource, activeDoc, pageCount, printRef, onStartOve
   }
 
   return (
-    <div className="action-bar no-print">
-      <div className="actions">
-        <button type="button" className="btn btn-primary" onClick={print} aria-describedby="print-hint">
-          <Svg d={ICON.print} /> Print
-        </button>
-        <button
-          type="button"
-          className="btn"
-          onClick={savePdf}
-          aria-disabled={pdf.kind === "making" || undefined}
-          aria-describedby="pdf-msg"
-        >
-          <Svg d={ICON.share} />
-          {pdf.kind === "making" ? "Making PDF…" : pdf.kind === "ready" ? "Share PDF now" : "Save or share PDF"}
-        </button>
-        {!confirming ? (
+    <div className="toolbar no-print" role="toolbar" aria-label="Page tools">
+      <div className="toolbar-row">
+        <span className="name">{name}</span>
+        <div className="actions">
+          <button type="button" className="btn" aria-pressed={view.colored} onClick={() => onViewChange({ colored: !view.colored })}>
+            Preview colored
+          </button>
           <button
             type="button"
             className="btn"
-            ref={restartRef}
-            onClick={() => {
-              setConfirming(true);
-              requestAnimationFrame(() => confirmRef.current?.focus());
-            }}
+            aria-pressed={view.answers}
+            onClick={() => onViewChange({ answers: !view.answers })}
+            aria-describedby="answers-hint"
           >
-            <Svg d={ICON.restart} /> Start over
+            Show answers
           </button>
-        ) : null}
+          <button type="button" className="btn solid" onClick={print} aria-describedby="print-hint">
+            Print
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={savePdf}
+            aria-disabled={pdf.kind === "making" || undefined}
+            aria-describedby="pdf-msg"
+          >
+            {pdf.kind === "making" ? "Making PDF…" : pdf.kind === "ready" ? "Share PDF now" : "Save or share PDF"}
+          </button>
+          {!confirming && (
+            <button
+              type="button"
+              className="btn"
+              ref={restartRef}
+              onClick={() => {
+                setConfirming(true);
+                requestAnimationFrame(() => confirmRef.current?.focus());
+              }}
+            >
+              Start over
+            </button>
+          )}
+        </div>
       </div>
-      <p className="hint" id="print-hint" style={{ margin: "0.5rem 0 0" }}>
-        Print and PDF use the {label.toLowerCase()} ({pages}). Pick a different tab above to print the others.
+      <p className="hint" id="print-hint">
+        Print and PDF give you {pages} in black and white
+        {view.answers ? ", with the answers showing in red. That copy is your answer key." : "."}
+      </p>
+      <p className="sr-only" id="answers-hint">
+        Shows the answers in red on the page. Print while answers are showing to get an answer key.
       </p>
       <Msg id="pdf-msg" kind={pdf.kind === "error" ? "error" : pdf.kind === "done" ? "success" : "info"}>
         {pdf.kind === "making"
@@ -135,7 +151,7 @@ export function ActionBar({ resource, activeDoc, pageCount, printRef, onStartOve
             <strong>Start over?</strong> This clears these notes from this device. Print or save anything you need first.
           </p>
           <div className="actions" style={{ marginTop: 0 }}>
-            <button type="button" className="btn btn-primary" ref={confirmRef} onClick={onStartOver}>
+            <button type="button" className="btn solid" ref={confirmRef} onClick={onStartOver}>
               Yes, start over
             </button>
             <button

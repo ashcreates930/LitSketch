@@ -9,6 +9,7 @@ const Body = z.object({
   html: z.string().min(1).max(1_500_000),
   title: z.string().max(200),
   lang: z.enum(["en", "es"]).default("en"),
+  answers: z.boolean().default(false),
 });
 
 function fail(message: string, status = 400) {
@@ -32,15 +33,23 @@ let cssCache: string | null = null;
 async function pageCss(): Promise<string> {
   if (cssCache) return cssCache;
   const root = process.cwd();
-  const fontDir = path.join(root, "node_modules/@fontsource/atkinson-hyperlegible/files");
-  const [regular, bold, doodle] = await Promise.all([
-    readFile(path.join(fontDir, "atkinson-hyperlegible-latin-400-normal.woff2")),
-    readFile(path.join(fontDir, "atkinson-hyperlegible-latin-700-normal.woff2")),
+  const font = (pkg: string, file: string) => readFile(path.join(root, "node_modules/@fontsource", pkg, "files", file));
+  const [regular, bold, bowlby, kalam, kalamBold, doodle] = await Promise.all([
+    font("atkinson-hyperlegible", "atkinson-hyperlegible-latin-400-normal.woff2"),
+    font("atkinson-hyperlegible", "atkinson-hyperlegible-latin-700-normal.woff2"),
+    font("bowlby-one", "bowlby-one-latin-400-normal.woff2"),
+    font("kalam", "kalam-latin-400-normal.woff2"),
+    font("kalam", "kalam-latin-700-normal.woff2"),
     readFile(path.join(root, "styles/doodle.css"), "utf8"),
   ]);
+  const face = (family: string, weight: number, data: Buffer) =>
+    `@font-face { font-family: "${family}"; font-weight: ${weight}; src: url(data:font/woff2;base64,${data.toString("base64")}) format("woff2"); }`;
   cssCache = `
-@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; src: url(data:font/woff2;base64,${regular.toString("base64")}) format("woff2"); }
-@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; src: url(data:font/woff2;base64,${bold.toString("base64")}) format("woff2"); }
+${face("Atkinson Hyperlegible", 400, regular)}
+${face("Atkinson Hyperlegible", 700, bold)}
+${face("Bowlby One", 400, bowlby)}
+${face("Kalam", 400, kalam)}
+${face("Kalam", 700, kalamBold)}
 html, body { margin: 0; padding: 0; background: #fff; }
 ${doodle}`;
   return cssCache;
@@ -89,7 +98,7 @@ export async function POST(req: Request) {
   }
 
   const doc = `<!doctype html><html lang="${body.lang}"><head><meta charset="utf-8"><title>${escapeHtml(body.title)}</title>
-<style>${await pageCss()}</style></head><body><main class="ls-print ls-pdf">${sanitize(body.html)}</main></body></html>`;
+<style>${await pageCss()}</style></head><body><main class="ls-print ls-pdf${body.answers ? " answers" : ""}">${sanitize(body.html)}</main></body></html>`;
 
   let browser: Awaited<ReturnType<typeof launchBrowser>> | null = null;
   try {

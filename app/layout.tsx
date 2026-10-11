@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource/atkinson-hyperlegible/400.css";
 import "@fontsource/atkinson-hyperlegible/700.css";
+import "@fontsource/bowlby-one/400.css";
+import "@fontsource/kalam/400.css";
+import "@fontsource/kalam/700.css";
 import "./globals.css";
 import { DisplaySetting } from "@/components/DisplaySetting";
 import Link from "next/link";
@@ -27,7 +30,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0b6b66" },
+    { media: "(prefers-color-scheme: light)", color: "#1b4d8f" },
     { media: "(prefers-color-scheme: dark)", color: "#10151e" },
   ],
 };
