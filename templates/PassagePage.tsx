@@ -26,7 +26,15 @@ export function PassagePage({ chunks, n, total, probe = false }: { chunks: Passa
         {chunks.map((c, k) => (
           <p key={`${c.i}-${k}`} className={`para${c.first ? "" : " cont"}${probe ? " probe" : ""}`} data-para={c.i}>
             <span className="pn" aria-hidden={c.first ? undefined : true}>
-              {c.first ? `¶${c.i + 1}` : ""}
+              {c.first ? (
+                <>
+                  {/* Bowlby One's ¶ looks like a 1, so the mark uses the reading font */}
+                  <span className="pmark">¶</span>
+                  {c.i + 1}
+                </>
+              ) : (
+                ""
+              )}
             </span>
             <span className="pt">{probe ? c.text : c.text || paras[c.i]}</span>
           </p>

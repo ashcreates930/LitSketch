@@ -274,3 +274,4 @@
 .ls-print .layout-vocab.mode-convergent .title .hollow { font-size: 2.4em; }
 .ls-print .layout-vocab.mode-convergent .text .ex { margin-bottom: 0.35em; }
 .sheet .use-it { margin-top: 0.35em; font-weight: 700; }
+.layout-passage .para .pmark { font-family: var(--body); font-weight: 700; margin-right: 0.08em; }
